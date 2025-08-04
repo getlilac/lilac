@@ -16,8 +16,12 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Lilac Agent CI
     steps:
     - uses: actions/checkout@v4
+    - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: 'agent -> target'
     - name: Build server
       run: cargo build
     - name: Run tests for agent
