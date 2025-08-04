@@ -20,6 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Install sqlx
+      run: cargo install sqlx-cli
+    - name: Check sqlx
+      run: cargo sqlx prepare --check
     - name: Build server
       run: cargo build
     - name: Run tests for server
