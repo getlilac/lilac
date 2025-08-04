@@ -8,7 +8,7 @@ on:
 
 defaults:
  run:
-  working-directory: ./agents
+  working-directory: agents
 
 env:
   CARGO_TERM_COLOR: always
