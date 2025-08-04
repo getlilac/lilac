@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT c.cluster_id, c.cluster_name, c.cluster_description, c.created_at, c.updated_at,\n                COUNT(DISTINCT n.node_id) AS \"total_nodes!: i64\",\n                COUNT(DISTINCT n.node_id) FILTER (WHERE n.node_status = 'busy') AS \"busy_nodes!: i64\",\n                COUNT(running_jobs.id) AS \"total_running_jobs!: i64\",\n                COALESCE(SUM((n.cpu).millicores), 0) AS \"total_millicores!: i64\",\n                COALESCE(SUM((n.cpu).millicores), 0) AS \"used_millicores!: i64\",\n                COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS \"total_memory_mb!: i64\",\n                COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS \"used_memory_mb!: i64\",\n                COALESCE(SUM((n.gpu).count), 0) AS \"total_gpus!: i64\",\n                COALESCE(SUM((n.gpu).count) FILTER (WHERE n.node_status = 'busy'), 0) AS \"used_gpus!: i64\"\n            FROM clusters c\n            LEFT JOIN cluster_nodes n ON c.cluster_id = n.cluster_id\n            LEFT JOIN training_jobs running_jobs ON running_jobs.status = 'running' AND n.node_id = running_jobs.node_id\n            WHERE c.cluster_id = $1\n            GROUP BY c.cluster_id;\n            ",
+  "query": "SELECT c.cluster_id, c.cluster_name, c.cluster_description, c.created_at, c.updated_at,\n                COUNT(DISTINCT n.node_id) AS \"total_nodes!: i64\",\n                COUNT(DISTINCT n.node_id) FILTER (WHERE n.node_status = 'busy') AS \"busy_nodes!: i64\",\n                COUNT(running_jobs.id) AS \"total_running_jobs!: i64\",\n                COALESCE(SUM((n.cpu).millicores), 0) AS \"total_millicores!: i64\",\n                COALESCE(SUM((n.cpu).millicores) FILTER (WHERE n.node_status = 'busy'), 0) AS \"used_millicores!: i64\",\n                COALESCE(SUM(n.memory_mb), 0) AS \"total_memory_mb!: i64\",\n                COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS \"used_memory_mb!: i64\",\n                COALESCE(SUM((n.gpu).count), 0) AS \"total_gpus!: i64\",\n                COALESCE(SUM((n.gpu).count) FILTER (WHERE n.node_status = 'busy'), 0) AS \"used_gpus!: i64\"\n            FROM clusters c\n            LEFT JOIN cluster_nodes n ON c.cluster_id = n.cluster_id\n            LEFT JOIN training_jobs running_jobs ON running_jobs.status = 'running' AND n.node_id = running_jobs.node_id\n            WHERE c.cluster_id = $1\n            GROUP BY c.cluster_id;\n            ",
   "describe": {
     "columns": [
       {
@@ -96,5 +96,5 @@
       null
     ]
   },
-  "hash": "a048a8a1e4f7c60c30e52490aba48ba2a139f9122b86158d4b7721b766ff015e"
+  "hash": "19013267cbe75fffb789ac6b7d763eb1e383ef13f4bc3307a298e551478bd933"
 }

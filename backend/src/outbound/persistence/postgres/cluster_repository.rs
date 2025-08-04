@@ -86,8 +86,8 @@ impl ClusterRepository for PostgresClusterRepository {
                 COUNT(DISTINCT n.node_id) FILTER (WHERE n.node_status = 'busy') AS "busy_nodes!: i64",
                 COUNT(running_jobs.id) AS "total_running_jobs!: i64",
                 COALESCE(SUM((n.cpu).millicores), 0) AS "total_millicores!: i64",
-                COALESCE(SUM((n.cpu).millicores), 0) AS "used_millicores!: i64",
-                COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS "total_memory_mb!: i64",
+                COALESCE(SUM((n.cpu).millicores) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_millicores!: i64",
+                COALESCE(SUM(n.memory_mb), 0) AS "total_memory_mb!: i64",
                 COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_memory_mb!: i64",
                 COALESCE(SUM((n.gpu).count), 0) AS "total_gpus!: i64",
                 COALESCE(SUM((n.gpu).count) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_gpus!: i64"
