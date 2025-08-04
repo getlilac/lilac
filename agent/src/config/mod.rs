@@ -70,8 +70,14 @@ pub fn load_agent_config() -> Result<AgentConfig, ConfigError> {
     if let Ok(api_endpoint) = env::var("LILAC_API_ENDPOINT") {
         let config = AgentConfig {
             api_endpoint,
-            cluster_api_key: env::var("LILAC_CLUSTER_API_KEY")
-                .map_err(|_| ConfigError::ReadFile)?,
+            cluster_api_key: {
+                let key = env::var("LILAC_CLUSTER_API_KEY")
+                    .map_err(|_| ConfigError::ReadFile)?;
+                if key.is_empty() {
+                    return Err(ConfigError::EmptyApiKey);
+                }
+                key
+            },
             node_id: env::var("LILAC_NODE_ID")
                 .ok()
                 .and_then(|s| s.parse().ok())

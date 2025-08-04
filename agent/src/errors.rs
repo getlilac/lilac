@@ -30,6 +30,8 @@ pub enum ConfigError {
     Parse,
     #[error("could not write config file")]
     WriteFile,
+    #[error("API key is set but empty. Please provide a valid API key.")]
+    EmptyApiKey,
     #[error("unknown error")]
     Unknown(#[from] anyhow::Error),
 }
