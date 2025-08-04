@@ -12,6 +12,7 @@ defaults:
 
 env:
   CARGO_TERM_COLOR: always
+  SQLX_OFFLINE: true 
 
 jobs:
   build:
