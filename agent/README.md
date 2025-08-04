@@ -61,7 +61,7 @@ The command will interactively guide you through the submission process, asking 
 -   **Queue**: The compute queue to submit the job to.
 -   **Resource Requirements**: CPU, memory, and GPU requirements for the job.
 
-> **Note:** The CLI no longer builds Docker images. You are responsible for building your image and pushing it to a registry that the Lilac agent can access.
+> **Note:** The CLI does not build Docker images (yet). You are responsible for building your image and pushing it to a registry that the Lilac agent can access.
 
 ### Non-Interactive Submission
 
@@ -135,12 +135,6 @@ docker run -d \
   getlilac/lilac-agent:latest
 ```
 
-**Flags Explained:**
-- `docker stop ... && docker rm ...`: This safely stops and removes the old container, allowing for seamless updates. It will fail harmlessly if no container exists on the first run.
-- `--privileged`: This is **required** for the agent to run its own Docker daemon (Docker-in-Docker) inside the container.
-- `--gpus all`: This exposes all of the host's GPUs to the agent, allowing it to run GPU-accelerated jobs.
-- `-e ...`: These environment variables are used to configure the agent, overriding any settings from a config file.
-
 ### 5. Connecting to Private Registries
 
 If your jobs use images from a private registry, you can configure the credentials using environment variables.
@@ -175,7 +169,7 @@ Here are the correct values to use for popular container registries:
 
 > #### **Known Limitation: AWS ECR**
 >
-> You are correct to note that the token for AWS ECR is temporary (typically valid for 12 hours). The current agent version does **not** automatically refresh these tokens. This means that after the token expires, the agent will fail to pull new images from ECR. Proper support for ECR's token refresh mechanism is a planned future improvement. For now, the agent works best with registries that use static, long-lived credentials like Personal Access Tokens.
+> AWS ECR tokens are temporary (typically valid for 12 hours). The current agent version does **not** automatically refresh these tokens. This means that after the token expires, the agent will fail to pull new images from ECR. Proper support for ECR's token refresh mechanism is coming soon. For now, the agent works best with registries that use static, long-lived credentials like Personal Access Tokens.
 
 ### 6. Minimum Requirements
 
@@ -185,7 +179,10 @@ While the agent itself is lightweight, it needs to handle Docker operations, whi
 
 >   **Memory**: 2 GB RAM
 >
- Running the agent with fewer resources may lead to instability, especially OOM (Out of Memory) errors when pulling large Docker images.
+
+>   **Disk Space**: 100GB
+>
+ Running the agent with fewer resources may lead to instability, especially OOM (Out of Memory) errors when pulling large Docker images. PyTorch jobs can rapidly fill up disk space, up to 100GB. If you plan on running simpler jobs, you can get away with significantly less disk space.
 
 ---
 

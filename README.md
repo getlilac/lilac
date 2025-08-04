@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Discord](https://img.shields.io/badge/Discord-7289DA?logo=discord&logoColor=white)](https://discord.com/invite/getlilac)
+[![Version](https://img.shields.io/github/v/release/getlilac/lilac)]
 
 Lilac is a distributed computing platform designed to run containerized jobs across a cluster of nodes. It provides a web-based UI for management, a powerful control plane for scheduling, and a lightweight agent for job execution.
 
@@ -18,12 +19,23 @@ curl -sSL https://raw.githubusercontent.com/getlilac/lilac/main/scripts/install.
 ```
 
 **2. Run the Lilac Platform**
+To run Lilac using docker compose, simply run the following command. This will start a local PostgreSQL container, the Lilac backend (http://localhost:8081), and the Lilac web UI (http://localhost:8080).
 
-_(TODO: Add instructions for running the backend and frontend, ideally with a Docker Compose file)._
+```bash
+docker compose -f ./docker/docker-compose.dev.yml --profile postgres up
+```
+
+If you would like to bring your own PostgreSQL database, modify the `LILAC__DATABASE_URL` env var in the `docker-compose.dev.yml` file to point to your database endpoint. The start Lilac without the local Postgres instance:
+
+```bash
+docker compose -f ./docker/docker-compose.dev.yml up
+```
 
 **3. Run an Agent**
 
 Once the platform is running, you can start an agent on any machine to add it to your compute cluster. The recommended method is to use our universal Docker image.
+
+In order to get a cluster API key, you must first create a cluster in the UI (http://localhost:8080/clusters). Then you can navigate to the "API Keys" tab in the Cluster's details page and generate an API key. This API key is how Lilac identifies which cluster to associate your node to.
 
 ```bash
 docker run -d \
@@ -60,11 +72,19 @@ lilac submit
 *   **Real-Time Monitoring**: Monitor the status of nodes, queues, and jobs in real-time.
 *   **User and API Key Management**: Securely manage user accounts and API keys.
 
+### Coming soon
+
+*   **Instance Pools**: Pool instances across many cloud providers into a single, autoscaled cluster. Simply select your cloud providers and the compute you need, and Lilac will provision the instances for you.
+*   **Workspaces**: Run Jupyter notebooks, VSCode, or bring your own Docker image on your clusters.
+*   **Data Sources**: Connect your data source into Lilac to use them seamlessly in workspaces or training jobs.
+*   **Runtime Logs**: Get improved visibility into your workloads. Export your logs to your observability platform of choice.
+*   **SSO & RBAC**: Bring your own SSO and manage your users with fine-grained access control.
+
 ---
 
 ## Agent & CLI
 
-The `lilac` is the primary tool for interacting with the Lilac platform. For detailed instructions on all CLI commands, agent configuration, connecting to private registries, and more, please see the comprehensive **[Agent and CLI README](./agent/README.md)**.
+The `lilac` CLI is the primary tool for interacting with the Lilac platform. For detailed instructions on all CLI commands, agent configuration, connecting to private registries, and more, please see **[Agent and CLI README](./agent/README.md)**.
 
 ## Contributing
 

@@ -7,9 +7,19 @@
 @import 'tw-animate-css';
 
 @import '@radix-ui/colors/slate.css';
+@import '@radix-ui/colors/sand.css';
+@import '@radix-ui/colors/blue.css';
+@import '@radix-ui/colors/green.css';
+@import '@radix-ui/colors/red.css';
 @import '@radix-ui/colors/iris.css';
+@import '@radix-ui/colors/orange.css';
 @import '@radix-ui/colors/slate-dark.css';
+@import '@radix-ui/colors/sand-dark.css';
+@import '@radix-ui/colors/blue-dark.css';
+@import '@radix-ui/colors/green-dark.css';
+@import '@radix-ui/colors/red-dark.css';
 @import '@radix-ui/colors/iris-dark.css';
+@import '@radix-ui/colors/orange-dark.css';
 
 :root {
   --gray-background-1: var(--slate-1);

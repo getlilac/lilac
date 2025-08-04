@@ -1,0 +1,5 @@
+database_url = "postgres://lilac-user:password@localhost/lilac"
+http_port = 8081
+secret_key = "a_secret_key_that_is_at_least_64_characters_long_0123456789abcde"
+log_format = "pretty"
+log_level = "info"

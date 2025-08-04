@@ -4,36 +4,32 @@ FROM rust:latest AS builder
 WORKDIR /opt/lilac/api
 
 # Install the application dependencies
-COPY ./backend/ ./
+COPY ./backend/src src
+COPY ./backend/migrations migrations
 COPY ./backend/.sqlx .sqlx
+COPY ./backend/Cargo.toml Cargo.toml
+COPY ./backend/Cargo.lock Cargo.lock
 
 RUN mkdir build/
 
 # Set SQLX to offline mode for the build
 ENV SQLX_OFFLINE=true
-RUN cargo build --package controlplane-api --target-dir ./build/
+RUN cargo build --package server --target-dir ./build/
 
 # Final Stage
 FROM rust:latest
 
 WORKDIR /opt/lilac/api
 
-# Install Helm
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
-    chmod 700 get_helm.sh && \
-    ./get_helm.sh
+ENV LILAC_CONFIG_FILE=./lilac.toml
 
-COPY --from=builder /opt/lilac/api/build/debug/controlplane-api ./controlplane-api
+COPY --from=builder /opt/lilac/api/build/debug/server ./server
+COPY ./backend/lilac.toml ./lilac.toml
 RUN groupadd --system appgroup && \
     useradd --system --gid appgroup --no-create-home appuser
 
-# Set user and home directory for helm
-ENV XDG_CONFIG_HOME=/tmp/.config
-ENV XDG_CACHE_HOME=/tmp/.cache
 USER appuser
 
 EXPOSE 8081
 
-CMD [ "./controlplane-api" ]
+CMD [ "./server" ]

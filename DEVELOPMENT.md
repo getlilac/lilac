@@ -28,7 +28,7 @@ graph TD
 
 ### Backend (Control Plane)
 
-The backend is a robust Rust application using Axum for its web server and SQLx for asynchronous database interaction with PostgreSQL. It exposes a RESTful API and employs a domain-driven design to structure its business logic.
+The backend is a Rust application using Axum for its web server and SQLx for interacting with PostgreSQL. It exposes a REST API and employs a domain-driven design to structure its business logic.
 
 #### Backend Domains
 
@@ -72,7 +72,7 @@ To get Lilac up and running locally, you'll need to set up the backend, frontend
     ```
 5.  **Start the Backend Server:** From the `backend` directory, run:
     ```bash
-    cargo run --bin server
+    LILAC_CONFIG_FILE='./lilac.toml' cargo run --bin server
     ```
 
 ### Frontend Setup
@@ -84,7 +84,7 @@ To get Lilac up and running locally, you'll need to set up the backend, frontend
     ```
 3.  **Start the Development Server:**
     ```bash
-    npm run dev
+    npm run dev -- --port 8080
     ```
 
 ### Agent Setup (for testing)

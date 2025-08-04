@@ -3,18 +3,18 @@ services:
     build:
       context: ../
       dockerfile: ./docker/backend/Dockerfile
-    command: /usr/local/app/backend
+    command: /opt/lilac/api/server
     depends_on:
       db:
         condition: service_healthy
+        required: false
     env_file:
       - ../.env
     environment:
-      - DATABASE_URL=postgres://postgres:password@db/database
+      - LILAC__DATABASE_URL=postgres://lilac-user:password@db/lilac
+      - LILAC_CONFIG_FILE=/opt/lilac/api/lilac.toml
     ports:
       - '8081:8081'
-    volumes:
-      - ../backend:/usr/local/app:rw
     networks:
       - default
   
@@ -22,20 +22,20 @@ services:
     build:
       context: ../
       dockerfile: ./docker/web/Dockerfile
-    command: /usr/local/app/web
+    command: serve -s dist -l 8080
     depends_on:
-      backend:
+      - backend
     env_file:
       - ../.env
     environment:
       - VITE_LILAC_API_ENDPOINT="http://localhost:8081"
     ports:
       - '8080:8080'
-    volumes:
-      - ../backend:/usr/local/app:rw
     networks:
       - default
+
   db:
+    profiles: ["postgres"]
     image: postgres
     restart: always
     environment:
