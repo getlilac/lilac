@@ -20,9 +20,9 @@ export function UserProfileDropdown({
   user,
   isLoading,
 }: UserProfileDropdownProps) {
-  const getInitials = (email?: string) => {
-    if (!email) return 'U';
-    return email.charAt(0).toUpperCase();
+  const getInitials = (username?: string) => {
+    if (!username) return 'U';
+    return username.charAt(0).toUpperCase();
   };
 
   if (isLoading) {
@@ -38,8 +38,7 @@ export function UserProfileDropdown({
       <DropdownMenuTrigger asChild>
         <button className='focus:ring-accent-ring rounded-full focus:ring-2 focus:ring-offset-2 focus:outline-none'>
           <Avatar>
-            {/* <AvatarImage src={user.avatarUrl} alt={user.name || user.email} /> */}
-            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+            <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>
@@ -48,7 +47,7 @@ export function UserProfileDropdown({
           <div className='flex flex-col space-y-1'>
             <p className='text-sm leading-none font-medium'>Signed in as</p>
             <p className='text-gray-text-muted truncate text-xs leading-none'>
-              {user.email}
+              {user.username}
             </p>
           </div>
         </DropdownMenuLabel>

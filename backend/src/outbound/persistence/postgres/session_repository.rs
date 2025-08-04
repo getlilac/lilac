@@ -52,12 +52,13 @@ impl PostgresSessionStore {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use crate::outbound::persistence::{sqlx::PgPool, PostgresStore};
+    /// use server::outbound::persistence::postgres::session_repository::PostgresSessionStore;
+    /// use sqlx::PgPool;
     ///
     /// # tokio_test::block_on(async {
     /// let database_url = std::option_env!("DATABASE_URL").unwrap();
     /// let pool = PgPool::connect(database_url).await.unwrap();
-    /// let session_store = PostgresStore::new(pool);
+    /// let session_store = PostgresSessionStore::new(pool);
     /// # })
     /// ```
     pub fn new(pool: PgPool) -> Self {
@@ -103,12 +104,13 @@ impl PostgresSessionStore {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use crate::outbound::persistence::postgres::{sqlx::PgPool, PostgresStore};
-    ///
+    /// use server::outbound::persistence::postgres::session_repository::PostgresSessionStore;
+    /// use sqlx::PgPool;
+    /// 
     /// # tokio_test::block_on(async {
     /// let database_url = std::option_env!("DATABASE_URL").unwrap();
     /// let pool = PgPool::connect(database_url).await.unwrap();
-    /// let session_store = PostgresStore::new(pool);
+    /// let session_store = PostgresSessionStore::new(pool);
     /// session_store.migrate().await.unwrap();
     /// # })
     /// ```

@@ -1,10 +1,9 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { QueryKeys } from '../constants';
-import { ServiceError } from '@/types';
+import { ApiKey, ServiceError } from '@/types';
 import { useEffect } from 'react';
 import { getHttp } from '@/lib/fetch';
 import type { SnakeCasedPropertiesDeep as Sn } from 'type-fest';
-import { ApiKey } from '@/model/api-key';
 
 export async function listApiKeys(): Promise<ApiKey[]> {
   const resp = await getHttp<Sn<ApiKey[]>>('/account/api-keys');

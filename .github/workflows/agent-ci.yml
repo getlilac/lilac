@@ -1,0 +1,24 @@
+name: Lilac agent CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+defaults:
+ run:
+  working-directory: ./agents
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build server
+      run: cargo build
+    - name: Run tests for agent
+      run: cargo test

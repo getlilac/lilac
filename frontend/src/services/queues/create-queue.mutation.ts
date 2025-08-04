@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ServiceError } from '@/types';
+import { Queue, ServiceError } from '@/types';
 import { postHttp } from '@/lib/fetch';
 import { QueryKeys } from '../constants';
 import type { SnakeCasedPropertiesDeep as Sn } from 'type-fest';
-import { Queue } from '@/model/queue';
 
 export interface CreateQueueRequest {
   name: string;
@@ -21,7 +20,7 @@ async function createQueue(payload: CreateQueueRequest): Promise<Queue> {
     id: resp.id,
     name: resp.name,
     priority: resp.priority,
-    cluster_targets: resp.cluster_targets,
+    clusterTargets: resp.cluster_targets,
   };
 }
 

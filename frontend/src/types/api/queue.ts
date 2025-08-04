@@ -1,4 +1,4 @@
-import { ResourceRequirements } from './cluster';
+import { ResourceRequirements } from './job';
 
 export interface QueueJob {
   jobId: string;
