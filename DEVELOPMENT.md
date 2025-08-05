@@ -65,7 +65,7 @@ To get Lilac up and running locally, you'll need to set up the backend, frontend
 
 1.  **Clone the repository.**
 2.  **Set up a PostgreSQL database.**
-3.  **Configure Environment:** Copy `.env.example` to `.env` and configure the `DATABASE_URL` and other settings.
+3.  **Configure Environment:** Copy `backend/.env.example` to `backend/.env` and optionally configure the `DATABASE_URL` and other settings.
 4.  **Run Database Migrations:** From the `backend` directory, run:
     ```bash
     sqlx migrate run

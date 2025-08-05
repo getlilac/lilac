@@ -33,7 +33,7 @@ curl -sSL https://raw.githubusercontent.com/getlilac/lilac/main/scripts/install.
 
 **2. Run the Lilac Platform**
 
-First run `cp .env.example .env` to create a dotenv file.
+First run `cp ./backend/lilac.example.toml ./backend/lilac.toml` to create the Lilac config file.
 
 Then to run Lilac using docker compose, simply run the following command. This will start a local PostgreSQL container, the Lilac backend (http://localhost:8081), and the Lilac web UI (http://localhost:8080).
 

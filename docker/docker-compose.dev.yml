@@ -8,8 +8,6 @@ services:
       db:
         condition: service_healthy
         required: false
-    env_file:
-      - ../.env
     environment:
       - LILAC__DATABASE_URL=postgres://lilac-user:password@db/lilac
       - LILAC_CONFIG_FILE=/opt/lilac/api/lilac.toml
@@ -25,8 +23,6 @@ services:
     command: serve -s dist -l 8080
     depends_on:
       - backend
-    env_file:
-      - ../.env
     environment:
       - VITE_LILAC_API_ENDPOINT="http://localhost:8081"
     ports:
