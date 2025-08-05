@@ -56,29 +56,26 @@ pub struct LilacConfig {
     pub log_format: LogFormat,
     #[serde(default)]
     pub log_level: LogLevel,
+    #[serde(default)]
+    pub disable_sign_up: bool,
+    #[serde(default)]
+    pub allowed_usernames: Option<Vec<String>>,
 }
 
 impl LilacConfig {
     pub fn new() -> Option<Self> {
         let config_file_path = std::env::var("LILAC_CONFIG_FILE");
-        match config_file_path {
-            Ok(path) => config::Config::builder()
-                .add_source(config::File::with_name(&path))
-                .add_source(config::Environment::with_prefix("LILAC").separator("__"))
-                .build()
-                .map_err(|e| println!("{e:?}"))
-                .ok()?
-                .try_deserialize()
-                .map_err(|e| println!("{e:?}"))
-                .ok(),
-            Err(_) => config::Config::builder()
-                .add_source(config::Environment::with_prefix("LILAC").separator("__"))
-                .build()
-                .map_err(|e| println!("{e:?}"))
-                .ok()?
-                .try_deserialize()
-                .map_err(|e| println!("{e:?}"))
-                .ok(),
+        let mut config_builder = config::Config::builder();
+        if let Ok(path) = config_file_path {
+            config_builder = config_builder.add_source(config::File::with_name(&path));
         }
+        config_builder
+            .add_source(config::Environment::with_prefix("LILAC").separator("__"))
+            .build()
+            .map_err(|e| println!("{e:?}"))
+            .ok()?
+            .try_deserialize()
+            .map_err(|e| println!("{e:?}"))
+            .ok()
     }
 }

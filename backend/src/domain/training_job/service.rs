@@ -54,6 +54,7 @@ impl From<ClusterRepositoryError> for TrainingJobServiceError {
     }
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait TrainingJobService: Send + Sync {
     async fn create(

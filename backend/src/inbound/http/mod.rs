@@ -37,6 +37,12 @@ pub struct AppState {
     pub queue_service: Arc<dyn QueueService>,
 }
 
+impl FromRef<AppState> for Arc<LilacConfig> {
+    fn from_ref(state: &AppState) -> Self {
+        state.config.clone()
+    }
+}
+
 impl FromRef<AppState> for Arc<dyn ClusterService> {
     fn from_ref(state: &AppState) -> Self {
         state.cluster_service.clone()
@@ -128,5 +134,25 @@ impl HttpServer {
         tracing::info!("starting server on {}:{}", self.address, self.port);
         axum::serve(self.listener, self.app).await?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+impl AppState {
+    pub fn new_mock(config: LilacConfig) -> Self {
+        use crate::domain::{
+            auth::service::MockAuthService, cluster::service::MockClusterService,
+            queue::service::MockQueueService, training_job::service::MockTrainingJobService,
+            user::service::MockUserService,
+        };
+
+        Self {
+            config: Arc::new(config),
+            cluster_service: Arc::new(MockClusterService::new()),
+            user_service: Arc::new(MockUserService::new()),
+            auth_service: Arc::new(MockAuthService::new()),
+            training_job_service: Arc::new(MockTrainingJobService::new()),
+            queue_service: Arc::new(MockQueueService::new()),
+        }
     }
 }

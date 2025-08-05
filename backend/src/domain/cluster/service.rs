@@ -80,6 +80,7 @@ impl From<TrainingJobRepositoryError> for ClusterServiceError {
 }
 
 // Add error for assign job id
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait ClusterService: Send + Sync {
     async fn create_cluster(

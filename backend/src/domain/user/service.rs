@@ -51,6 +51,7 @@ impl From<ApiKeyRepositoryError> for UserServiceError {
     }
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait UserService: Send + Sync {
     async fn create_user(&self, req: &CreateUserRequest) -> Result<User, UserServiceError>;

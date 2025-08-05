@@ -41,6 +41,7 @@ impl From<TrainingJobRepositoryError> for QueueServiceError {
     }
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait QueueService: Send + Sync {
     async fn create_queue(&self, request: CreateQueueRequest) -> Result<Queue, QueueServiceError>;

@@ -106,7 +106,7 @@ impl PostgresSessionStore {
     /// ```rust,no_run
     /// use server::outbound::persistence::postgres::session_repository::PostgresSessionStore;
     /// use sqlx::PgPool;
-    /// 
+    ///
     /// # tokio_test::block_on(async {
     /// let database_url = std::option_env!("DATABASE_URL").unwrap();
     /// let pool = PgPool::connect(database_url).await.unwrap();

@@ -45,6 +45,7 @@ impl From<VerifyError> for AuthServiceError {
     }
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait AuthService: Send + Sync {
     async fn login_with_username(
