@@ -17,7 +17,7 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
-  const pageCount = Math.round(
+  const pageCount = Math.ceil(
     table.getFilteredRowModel().rows.length /
       table.getState().pagination.pageSize
   );
