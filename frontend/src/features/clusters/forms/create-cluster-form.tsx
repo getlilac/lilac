@@ -19,7 +19,11 @@ import createFormStore from '@/store/use-form-data';
 import { Input } from '@/components/ui/input';
 
 const clusterSchema = z.object({
-  clusterName: z.string(),
+  clusterName: z
+    .string({
+      error: 'Cluster name is required.',
+    })
+    .min(1, { message: 'Cluster name cannot be empty.' }),
   clusterDescription: z.string().optional(),
 });
 
