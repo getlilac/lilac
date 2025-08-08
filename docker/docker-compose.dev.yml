@@ -46,7 +46,7 @@ services:
     networks:
       - default
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U lilac-user -d password"]
       interval: 5s
       timeout: 5s
       retries: 5

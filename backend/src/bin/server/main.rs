@@ -52,6 +52,10 @@ async fn main() -> anyhow::Result<()> {
     let db_pool = PgPoolOptions::new()
         .connect(config.database_url.expose_secret())
         .await?;
+    sqlx::migrate!()
+        .run(&db_pool)
+        .await
+        .expect("migrations to run");
     let cluster_repo = Arc::new(PostgresClusterRepository::new(db_pool.clone()));
     let user_repo = Arc::new(PostgresUserRepository::new(db_pool.clone()));
     let jwt_manager = Arc::new(JwtManager::new(config.secret_key.expose_secret()));
