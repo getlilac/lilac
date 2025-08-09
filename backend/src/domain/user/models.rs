@@ -83,3 +83,19 @@ pub struct ApiKey {
     pub last_used_at: Option<DateTime<Utc>>,
     pub expires_at: Option<DateTime<Utc>>,
 }
+
+#[cfg(test)]
+impl User {
+    /// Creates a mock User instance.
+    pub fn new_mock() -> Self {
+        Self {
+            id: Uuid::new_v4().into(),
+            username: "test_user".to_string(),
+            first_name: Some("Test".to_string()),
+            last_name: Some("User".to_string()),
+            password_hash: None,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        }
+    }
+}
