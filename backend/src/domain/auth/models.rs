@@ -74,3 +74,17 @@ impl FromRequestParts<AppState> for Claims {
         Ok(claims)
     }
 }
+
+#[cfg(test)]
+impl Claims {
+    /// Creates mock Claims for a given user ID.
+    pub fn new_mock(user_id: UserId) -> Self {
+        use chrono::Utc;
+
+        Self {
+            sub: user_id,
+            exp: (Utc::now() + chrono::Duration::hours(1)).timestamp() as usize,
+            iat: Utc::now().timestamp() as usize,
+        }
+    }
+}

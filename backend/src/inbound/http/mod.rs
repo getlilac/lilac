@@ -139,7 +139,8 @@ impl HttpServer {
 
 #[cfg(test)]
 impl AppState {
-    pub fn new_mock(config: LilacConfig) -> Self {
+    /// Creates a new mock AppState with the provided configuration.
+    pub fn new_mock_with_config(config: LilacConfig) -> Self {
         use crate::domain::{
             auth::service::MockAuthService, cluster::service::MockClusterService,
             queue::service::MockQueueService, training_job::service::MockTrainingJobService,
@@ -154,5 +155,10 @@ impl AppState {
             training_job_service: Arc::new(MockTrainingJobService::new()),
             queue_service: Arc::new(MockQueueService::new()),
         }
+    }
+
+    /// Creates a new mock AppState with default configuration.
+    pub fn new_mock() -> Self {
+        Self::new_mock_with_config(LilacConfig::default())
     }
 }
