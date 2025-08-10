@@ -1,56 +1,78 @@
-# Advanced Setup: Manual Installation
+# Setting up your own DB & Production Builds
 
-This guide covers the process of setting up and running the Lilac backend manually, without using Docker Compose. This is for advanced users who want more control over the setup process.
+This guide covers advanced setup for running the Lilac backend. This includes connecting to your own production database and compiling the backend for production use.
 
-### Prerequisites
+## Using Your Own Database
 
-Before you begin, you will need to have the following installed on your system:
+If you prefer to manage your own PostgreSQL instance instead of using the one provided in the Docker Compose setup, follow these steps.
 
-*   **Rust**: You can install Rust using the official `rustup` installer.
-*   **PostgreSQL**: You will need a running PostgreSQL instance to back the application.
+### 1. Create the Database
 
-### Database Setup
+Connect to your PostgreSQL instance and create a new database for Lilac.
 
-1.  **Create the Database**: Create a new PostgreSQL database for the application.
-
-    ```sql
-    CREATE DATABASE lilac;
-    ```
-
-2.  **Run Migrations**: The application uses `sqlx` to manage database migrations. To run the migrations, you will need to have the `sqlx-cli` installed.
-
-    ```bash
-    cargo install sqlx-cli
-    ```
-
-    Once installed, you can run the migrations from the `backend` directory:
-
-    ```bash
-    sqlx migrate run
-    ```
-
-### Configuration
-
-1.  **Create `lilac.toml`**: Create a new file named `lilac.toml` in the `backend` directory. You can use the `lilac.example.toml` file as a template.
-
-    ```toml
-    database_url = "postgres://your-user:your-password@localhost/lilac"
-    http_port = 8081
-    secret_key = "a_very_long_and_secret_key_that_is_at_least_64_characters"
-    ```
-
-2.  **Create `.env`**: Create a new file named `.env` in the `backend` directory. You can use the `.env.example` file as a template. For local development, you will typically want to set `SQLX_OFFLINE=true` to use cached queries.
-
-    ```
-    SQLX_OFFLINE=true
-    ```
-
-### Running the Server
-
-Once you have completed the setup and configuration, you can run the backend server from the `backend` directory:
-
-```bash
-cargo run --bin server
+```sql
+CREATE DATABASE lilac;
 ```
 
-The server should now be running on port 8081.
+### 2. Configure the Connection
+
+The backend requires a `DATABASE_URL` to connect to your database. You can provide this in a `lilac.toml` file or as an environment variable.
+
+For example, in your `lilac.toml`:
+```toml
+database_url = "postgres://your-user:your-password@your-host/lilac"
+# ... other settings
+```
+
+### 3. Run Migrations
+
+The application uses `sqlx` to manage database migrations. To run the migrations against your custom database, you will need to have the `sqlx-cli` installed.
+
+```bash
+cargo install sqlx-cli
+```
+
+Once installed, you can run the migrations from the `backend` directory, pointing to your database:
+
+```bash
+DATABASE_URL="postgres://your-user:your-password@your-host/lilac" sqlx migrate run
+```
+
+## Compiling for Production
+
+For production deployments, you should compile an optimized release binary instead of using `cargo run`.
+
+### 1. Build the Release Binary
+
+From the root of the `backend` directory, run the following command to compile the server binary:
+
+```bash
+cargo build --release --bin server
+```
+
+This command compiles the application in release mode, with optimizations enabled.
+
+### 2. Locate the Binary
+
+The compiled binary will be located at `backend/target/release/server`.
+
+### 3. Configuration
+
+Before running the binary, ensure you have a `lilac.toml` file configured in the same directory where you plan to run the binary, or provide the configuration via environment variables.
+
+**`lilac.toml`:**
+```toml
+database_url = "postgres://your-user:your-password@your-host/lilac"
+http_port = 8081
+secret_key = "a_very_long_and_secret_key_that_is_at_least_64_characters_long"
+```
+
+### 4. Run the Server
+
+You can now run the compiled binary directly:
+
+```bash
+./backend/target/release/server
+```
+
+The server will start and connect to the database you configured.
