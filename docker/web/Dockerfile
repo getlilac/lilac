@@ -1,6 +1,9 @@
 
 FROM node:24-alpine
 
+ARG VITE_LILAC_API_ENDPOINT="http://localhost:8081"
+ENV VITE_LILAC_API_ENDPOINT=$VITE_LILAC_API_ENDPOINT
+
 WORKDIR /opt/lilac/web
 
 COPY ./frontend/package.json .

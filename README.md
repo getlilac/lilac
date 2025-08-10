@@ -34,12 +34,18 @@ curl -sSL https://raw.githubusercontent.com/getlilac/lilac/main/scripts/install.
 
 **2. Run the Lilac Platform**
 
-First run `cp ./backend/lilac.example.toml ./backend/lilac.toml` to create the Lilac config file.
+First, create the necessary configuration files from the provided examples:
+```bash
+cp ./backend/lilac.example.toml ./backend/lilac.toml
+cp ./docker/.env.example ./docker/.env
+```
 
-Then to run Lilac using docker compose, simply run the following command. This will start a local PostgreSQL container, the Lilac backend (http://localhost:8081), and the Lilac web UI (http://localhost:8080).
+**Important:** If you are running Lilac on a remote server, you must edit the `docker/.env` file and replace `http://localhost:8081` with the public IP address or domain name of your server.
+
+Then, to run Lilac using Docker Compose, simply run the following command. This will start a local PostgreSQL container, the Lilac backend (http://localhost:8081), and the Lilac web UI (http://localhost:8080).
 
 ```bash
-docker compose -f ./docker/docker-compose.dev.yml --profile postgres up
+docker compose --env-file ./docker/.env -f ./docker/docker-compose.dev.yml --profile postgres up
 ```
 
 If you would like to bring your own PostgreSQL database, modify the `LILAC__DATABASE_URL` env var in the `docker-compose.dev.yml` file to point to your database endpoint. The start Lilac without the local Postgres instance:

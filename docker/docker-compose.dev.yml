@@ -20,11 +20,11 @@ services:
     build:
       context: ../
       dockerfile: ./docker/web/Dockerfile
+      args:
+        - VITE_LILAC_API_ENDPOINT=${VITE_LILAC_API_ENDPOINT}
     command: serve -s dist -l 8080
     depends_on:
       - backend
-    environment:
-      - VITE_LILAC_API_ENDPOINT="http://localhost:8081"
     ports:
       - '8080:8080'
     networks:
