@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind",
-    "deploy": "next build && aws s3 sync out s3://docs.getlilac.com --delete && aws cloudfront create-invalidation --distribution-id E296IA7UGES8XY --paths \"/*\""
+    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
   },
   "dependencies": {
     "next": "^15.4.6",

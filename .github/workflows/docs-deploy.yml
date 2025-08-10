@@ -32,6 +32,13 @@ jobs:
         run: npm install
         working-directory: ./docs
 
-      - name: Deploy
-        run: npm run deploy
+      - name: Build
+        run: npm run build
         working-directory: ./docs
+
+      - name: Sync to S3
+        run: aws s3 sync ./out s3://${{ secrets.AWS_S3_DOCS_BUCKET }} --delete
+        working-directory: ./docs
+
+      - name: Invalidate CloudFront
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
