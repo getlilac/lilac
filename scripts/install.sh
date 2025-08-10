@@ -62,7 +62,7 @@ esac
 # 2. Determine Release Version
 if [ -z "$1" ]; then
   info "Fetching the latest release version..."
-  VERSION=$(curl -s "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  VERSION=$(curl -s "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" | awk -F'"' '/"tag_name"/ {print $4; exit}')
   if [ -z "$VERSION" ]; then
     error "Could not fetch the latest release version. Please check the repository and your connection."
   fi
