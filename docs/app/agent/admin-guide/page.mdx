@@ -1,0 +1,113 @@
+# Admin Guide: Running the Agent
+
+As an administrator, you will configure and run the Lilac agent on the compute nodes in your cluster.
+
+### 1. Configuration
+
+To configure the agent, run the interactive `agent configure` command:
+
+```bash
+lilac agent configure
+```
+
+This will prompt you for:
+
+-   **Lilac API Endpoint**: The URL of the Lilac control plane.
+-   **Cluster API Key**: The shared secret for authenticating agents with the Lilac cluster.
+-   **Private Docker Registry (Optional)**: If your jobs use images from a private registry, you can configure the credentials here.
+
+This command creates a configuration file at `~/.lilac/agent.toml`.
+
+### 2. Starting the Agent
+
+Once configured, you can start the agent daemon with the following command:
+
+```bash
+lilac agent start
+```
+
+The agent will connect to the control plane, report its available resources, and wait for jobs to be assigned.
+
+> **Note on GPUs**: For the agent to utilize and report on NVIDIA GPU resources, the host machine must have NVIDIA drivers installed.
+
+### 3. Environment Variables
+
+The following environment variables can be used to configure the agent. They will override any settings in the `agent.toml` file.
+
+| Variable                          | Description                                |
+| --------------------------------- | ------------------------------------------ |
+| `LILAC_API_ENDPOINT`              | The Lilac control plane URL.               |
+| `LILAC_CLUSTER_API_KEY`           | The shared cluster API key.                |
+| `LILAC_NODE_ID`                   | A unique ID for the node (optional).       |
+| `LILAC_PRIVATE_REGISTRY_URL`      | URL of the private Docker registry.        |
+| `LILAC_PRIVATE_REGISTRY_USERNAME` | Username for the private registry.         |
+| `LILAC_PRIVATE_REGISTRY_PASSWORD` | Password or token for the private registry.|
+
+### 4. Running the Universal Agent (Docker)
+
+The recommended way to run the agent is using the official "universal" Docker image. This image is self-contained and includes all necessary dependencies, including its own Docker daemon (Docker-in-Docker) and the NVIDIA Container Toolkit.
+
+Use the following command to run or update the agent. This command will gracefully stop and remove any old agent container before pulling the latest image and starting a new one.
+
+**Important:** You must replace `<YOUR_API_ENDPOINT>` and `<YOUR_CLUSTER_API_KEY>` with your actual credentials.
+
+```bash
+docker stop lilac-agent && docker rm lilac-agent && \
+docker pull getlilac/lilac-agent:latest && \
+docker run -d \
+  --name lilac-agent \
+  --restart always \
+  --privileged \
+  -e LILAC_API_ENDPOINT="<YOUR_API_ENDPOINT>" \
+  -e LILAC_CLUSTER_API_KEY="<YOUR_CLUSTER_API_KEY>" \
+  --gpus all \
+  getlilac/lilac-agent:latest
+```
+
+### 5. Connecting to Private Registries
+
+If your jobs use images from a private registry, you can configure the credentials using environment variables.
+
+Below is the full command template. Add the three `LILAC_PRIVATE_REGISTRY_*` variables to connect to your private registry.
+
+```bash
+docker stop lilac-agent && docker rm lilac-agent && \
+docker pull getlilac/lilac-agent:latest && \
+docker run -d \
+  --name lilac-agent \
+  --restart always \
+  --privileged \
+  -e LILAC_API_ENDPOINT="<YOUR_API_ENDPOINT>" \
+  -e LILAC_CLUSTER_API_KEY="<YOUR_CLUSTER_API_KEY>" \
+  -e LILAC_PRIVATE_REGISTRY_URL="<YOUR_REGISTRY_URL>" \
+  -e LILAC_PRIVATE_REGISTRY_USERNAME="<YOUR_REGISTRY_USERNAME>" \
+  -e LILAC_PRIVATE_REGISTRY_PASSWORD="<YOUR_REGISTRY_PASSWORD_OR_TOKEN>" \
+  --gpus all \
+  getlilac/lilac-agent:latest
+```
+
+#### Registry-Specific Configurations
+
+Here are the correct values to use for popular container registries:
+
+| Registry | `LILAC_PRIVATE_REGISTRY_URL` | `LILAC_PRIVATE_REGISTRY_USERNAME` | `LILAC_PRIVATE_REGISTRY_PASSWORD` |
+|---|---|---|---|
+| **Docker Hub** | `https://index.docker.io/v1/` | Your Docker Hub Username | Your Personal Access Token (PAT) |
+| **Google (GCR)** | `https://gcr.io` | `_json_key` | The full content of your JSON service account key |
+| **Amazon (ECR)** | `https://<aws_account_id>.dkr.ecr.<region>.amazonaws.com` | `AWS` | The temporary token from `aws ecr get-login-password` |
+
+> #### **Known Limitation: AWS ECR**
+>
+> AWS ECR tokens are temporary (typically valid for 12 hours). The current agent version does **not** automatically refresh these tokens. This means that after the token expires, the agent will fail to pull new images from ECR. Proper support for ECR's token refresh mechanism is coming soon. For now, the agent works best with registries that use static, long-lived credentials like Personal Access Tokens.
+
+### 6. Minimum Requirements
+
+While the agent itself is lightweight, it needs to handle Docker operations, which can be resource-intensive, especially during the `docker pull` phase for large images. To ensure reliable operation, we recommend the following minimum resources for any environment running the agent:
+>
+>   **CPU**: 1 core
+>
+>   **Memory**: 2 GB RAM
+>
+>   **Disk Space**: 100GB
+>
+>  Running the agent with fewer resources may lead to instability, especially OOM (Out of Memory) errors when pulling large Docker images. PyTorch jobs can rapidly fill up disk space, up to 100GB. If you plan on running simpler jobs, you can get away with significantly less disk space.

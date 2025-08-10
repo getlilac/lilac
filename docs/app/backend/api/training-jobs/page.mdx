@@ -1,0 +1,128 @@
+# Training Jobs API
+
+The Training Jobs API provides endpoints for managing training jobs in Lilac.
+
+## The Training Job Object
+
+The `TrainingJob` object represents a training job in the system.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | The unique identifier for the training job. |
+| `name` | `string` | The name of the training job. |
+| `status` | `string` | The status of the training job. Can be one of `Pending`, `Running`, `Succeeded`, `Failed`, or `Cancelled`. |
+| `node_id` | `string` | The ID of the node the job is running on. |
+| `queue_id` | `string` | The ID of the queue the job is assigned to. |
+| `resource_requirements` | `object` | The resource requirements for the job. |
+| `created_at` | `string` | The timestamp when the training job was created. |
+| `updated_at` | `string` | The timestamp when the training job was last updated. |
+
+---
+
+## Create a Training Job
+
+Creates a new training job.
+
+### Request
+
+`POST /api/training-jobs`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | The name of the training job. |
+| `definition` | `string` | The definition of the training job. |
+| `queue_id` | `string` | The ID of the queue to assign the job to. |
+| `resource_requirements` | `object` | The resource requirements for the job. |
+
+### Response
+
+`201 Created`
+
+Returns the created `TrainingJob` object.
+
+---
+
+## List Training Jobs
+
+Lists all training jobs.
+
+### Request
+
+`GET /api/training-jobs`
+
+### Response
+
+`200 OK`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `jobs` | `array` | A list of `TrainingJob` objects. |
+
+---
+
+## Get a Training Job
+
+Retrieves a specific training job by its ID.
+
+### Request
+
+`GET /api/training-jobs/{job_id}`
+
+### Response
+
+`200 OK`
+
+Returns the `TrainingJob` object.
+
+---
+
+## Update Training Job Status
+
+Updates the status of a training job.
+
+### Request
+
+`PATCH /api/training-jobs/{job_id}/status`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `status` | `string` | The new status of the training job. |
+
+### Response
+
+`200 OK`
+
+---
+
+## Post Logs
+
+Posts logs for a training job.
+
+> [!NOTE]
+> This endpoint is not yet implemented.
+
+### Request
+
+`POST /api/training-jobs/{job_id}/logs`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `logs` | `string` | The logs to post. |
+
+### Response
+
+`200 OK`
+
+---
+
+## Cancel a Training Job
+
+Cancels a training job.
+
+### Request
+
+`POST /api/training-jobs/{job_id}/cancel`
+
+### Response
+
+`200 OK`

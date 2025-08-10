@@ -12,3 +12,12 @@ venv/
 **/toolchain/*
 dist
 .DS_Store
+
+# Pagefind
+public/_pagefind
+
+# Next.js / Docs specific
+docs/.next/
+docs/out/
+docs/node_modules/
+docs/public/_pagefind

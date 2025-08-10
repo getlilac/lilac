@@ -1,0 +1,43 @@
+{
+  "CallerReference": "docs.getlilac.com-2025-08-09",
+  "DefaultRootObject": "index.html",
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "S3-docs.getlilac.com",
+        "DomainName": "docs.getlilac.com.s3-website-us-east-1.amazonaws.com",
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "http-only"
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "S3-docs.getlilac.com",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+        "Quantity": 2,
+        "Items": ["GET", "HEAD"],
+        "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+        }
+    },
+    "Compress": true,
+    "ForwardedValues": {
+        "QueryString": false,
+        "Cookies": { "Forward": "none" }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 86400,
+    "MaxTTL": 31536000
+  },
+  "Comment": "CloudFront distribution for docs.getlilac.com",
+  "Enabled": true,
+  "ViewerCertificate": {
+    "CloudFrontDefaultCertificate": true
+  }
+}

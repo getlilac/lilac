@@ -1,0 +1,66 @@
+# Quick Start
+
+Get up and running with Lilac in just a few steps.
+
+### 1. Install the CLI
+
+We provide a simple installer script for macOS and Linux. Run the following command to automatically download and install the latest version:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/getlilac/lilac/main/scripts/install.sh | sh
+```
+
+### 2. Run the Lilac Platform
+
+First run `cp ./backend/lilac.example.toml ./backend/lilac.toml` to create the Lilac config file.
+
+Then to run Lilac using docker compose, simply run the following command. This will start a local PostgreSQL container, the Lilac backend (http://localhost:8081), and the Lilac web UI (http://localhost:8080).
+
+```bash
+docker compose -f ./docker/docker-compose.dev.yml --profile postgres up
+```
+
+If you would like to bring your own PostgreSQL database, modify the `LILAC__DATABASE_URL` env var in the `docker-compose.dev.yml` file to point to your database endpoint. The start Lilac without the local Postgres instance:
+
+```bash
+docker compose -f ./docker/docker-compose.dev.yml up
+```
+
+### 3. Run an Agent
+
+Once the platform is running, you can start an agent on any machine to add it to your compute cluster. The recommended method is to use our universal Docker image.
+
+In order to get a cluster API key, you must first create a cluster in the UI (http://localhost:8080/clusters). Then you can navigate to the "API Keys" tab in the Cluster's details page and generate an API key. This API key is how Lilac identifies which cluster to associate your node to.
+
+```bash
+docker run -d \
+  --name lilac-agent \
+  --restart always \
+  --privileged \
+  -e LILAC_API_ENDPOINT="<YOUR_API_ENDPOINT>" \
+  -e LILAC_CLUSTER_API_KEY="<YOUR_CLUSTER_API_KEY>" \
+  # Optional: Add the following three lines to connect to a private Docker registry
+  # -e LILAC_PRIVATE_REGISTRY_URL="<YOUR_REGISTRY_URL>" \
+  # -e LILAC_PRIVATE_REGISTRY_USERNAME="<YOUR_REGISTRY_USERNAME>" \
+  # -e LILAC_PRIVATE_REGISTRY_PASSWORD="<YOUR_REGISTRY_PASSWORD_OR_TOKEN>" \
+  --gpus all \
+  getlilac/lilac-agent:latest
+```
+
+### 4. Submit a Job
+
+Configure the CLI with your user credentials:
+```bash
+lilac configure
+```
+
+Then, you can submit your first job to the cluster:
+```bash
+lilac submit
+
+The `submit` command will interactively guide you through the process of submitting a job. You will be prompted for the following information:
+
+-   **Job Name**: A descriptive name for your job.
+-   **Docker Image URI**: The full URI of your job's Docker image (e.g., `your-registry.com/your-repo/your-image:latest`).
+-   **Queue**: The compute queue to submit the job to.
+-   **Resource Requirements**: CPU, memory, and GPU requirements for the job.

@@ -1,0 +1,58 @@
+# Getting Started with the Frontend
+
+This guide will walk you through the process of setting up and running the frontend application on your local machine.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+-   **Node.js**: We recommend using the latest LTS version. You can download it from [nodejs.org](https://nodejs.org/).
+-   **npm**: npm is distributed with Node.js, so it will be installed automatically.
+
+## Installation
+
+1.  **Clone the repository**
+
+    If you haven't already, clone the project repository to your local machine.
+
+2.  **Navigate to the frontend directory**
+
+    ```bash
+    cd frontend
+    ```
+
+3.  **Install dependencies**
+
+    Run the following command to install the necessary dependencies:
+
+    ```bash
+    npm install
+    ```
+
+## Configuration
+
+1.  **Create an environment file**
+
+    Create a `.env` file in the `frontend` directory. You can do this by copying the example file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+2.  **Set the API endpoint**
+
+    Open the `.env` file and set the `VITE_LILAC_API_ENDPOINT` variable to the URL of your running backend API.
+
+    ```env
+    VITE_LILAC_API_ENDPOINT=http://localhost:8081
+    ```
+
+## Running the Development Server
+
+Once you have completed the installation and configuration steps, you can start the development server:
+
+```bash
+npm run dev
+```
+
+This will start the application on `http://localhost:8080` by default. You can now access the frontend in your web browser.

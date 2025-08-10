@@ -1,0 +1,40 @@
+# CLI Reference
+
+This page provides a quick reference for all available `lilac` commands and their arguments.
+
+### `lilac submit`
+
+| Argument            | Description                               |
+| ------------------- | ----------------------------------------- |
+| `--name`            | Name of the job.                          |
+| `--docker-uri`      | Docker image URI for the job.             |
+| `--queue-id`        | ID of the queue to submit the job to.     |
+| `--cpu`             | CPU required in millicores.               |
+| `--memory`          | Memory required in MB.                    |
+| `--gpu-count`       | Number of GPUs required.                  |
+| `--non-interactive` | Skip interactive prompts and submit directly. |
+
+### `lilac configure`
+
+Run an interactive prompt to configure the Lilac CLI for submitting jobs.
+
+### `lilac agent start`
+
+Start the agent daemon. This command does not take any arguments and uses the configuration from `~/.lilac/agent.toml` and environment variables.
+
+### `lilac agent configure`
+
+Run an interactive prompt to configure the Lilac agent. This command creates the `~/.lilac/agent.toml` file.
+
+### Environment Variables
+
+The following environment variables can be used to configure the agent. They will override any settings in the `agent.toml` file.
+
+| Variable                          | Description                                |
+| --------------------------------- | ------------------------------------------ |
+| `LILAC_API_ENDPOINT`              | The Lilac control plane URL.               |
+| `LILAC_CLUSTER_API_KEY`           | The shared cluster API key.                |
+| `LILAC_NODE_ID`                   | A unique ID for the node (optional).       |
+| `LILAC_PRIVATE_REGISTRY_URL`      | URL of the private Docker registry.        |
+| `LILAC_PRIVATE_REGISTRY_USERNAME` | Username for the private registry.         |
+| `LILAC_PRIVATE_REGISTRY_PASSWORD` | Password or token for the private registry.|

@@ -1,0 +1,113 @@
+
+# Authentication API
+
+This document provides detailed information about the Lilac Authentication API endpoints.
+
+## Endpoints
+
+### Login
+
+-   **HTTP Method:** `POST`
+-   **Path:** `/api/auth/login`
+-   **Description:** This endpoint authenticates a user with their username and password and returns a JWT token upon successful authentication.
+
+#### Request Body
+
+The request body must be a JSON object with the following fields:
+
+| Field      | Type     | Description                  |
+| ---------- | -------- | ---------------------------- |
+| `username` | `string` | The user's username.         |
+| `password` | `string` | The user's password.         |
+
+#### Example
+
+```json
+{
+    "username": "testuser",
+    "password": "password123"
+}
+```
+
+#### Response
+
+-   **Status Code:** `200 OK`
+-   **Description:** The user has been successfully authenticated.
+
+The response body will be a JSON object containing the access token:
+
+| Field          | Type     | Description                                  |
+| -------------- | -------- | -------------------------------------------- |
+| `access_token` | `string` | The JWT token for the authenticated session. |
+| `token_type`   | `string` | The type of token. Always `Bearer`.          |
+
+#### Example
+
+```json
+{
+    "access_token": "ey...",
+    "token_type": "Bearer"
+}
+```
+
+### Sign Up
+
+-   **HTTP Method:** `POST`
+-   **Path:** `/api/auth/signup`
+-   **Description:** This endpoint creates a new user account.
+
+#### Request Body
+
+The request body must be a JSON object with the following fields:
+
+| Field        | Type     | Description              |
+| ------------ | -------- | ------------------------ |
+| `username`   | `string` | The new user's username. |
+| `first_name` | `string` | The user's first name.   |
+| `last_name`  | `string` | The user's last name.    |
+| `password`   | `string` | The new user's password. |
+
+#### Example
+
+```json
+{
+    "username": "newuser",
+    "first_name": "Test",
+    "last_name": "User",
+    "password": "password123"
+}
+```
+
+#### Response
+
+-   **Status Code:** `200 OK`
+-   **Description:** The user account has been successfully created.
+
+The response body will be a JSON object containing the new user's ID:
+
+| Field     | Type     | Description                   |
+| --------- | -------- | ----------------------------- |
+| `user_id` | `string` | The unique ID of the new user. |
+
+#### Example
+
+```json
+{
+    "user_id": "00000000-0000-0000-0000-000000000000"
+}
+```
+
+### Logout
+
+-   **HTTP Method:** `GET`
+-   **Path:** `/api/auth/logout`
+-   **Description:** This endpoint logs the user out by clearing their session.
+
+#### Request Body
+
+This endpoint does not require a request body.
+
+#### Response
+
+-   **Status Code:** `302 Found`
+-   **Description:** The user has been successfully logged out and is redirected to the home page (`/`).

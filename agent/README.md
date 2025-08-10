@@ -1,5 +1,13 @@
 # Lilac CLI and Agent
 
+<div align="center">
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Discord](https://img.shields.io/badge/Discord-7289DA?logo=discord&logoColor=white)](https://discord.com/invite/getlilac)
+[![Version](https://img.shields.io/github/v/release/getlilac/lilac)](https://github.com/getlilac/lilac/releases)
+[![Documentation](https://img.shields.io/badge/Documentation-blue)](https://docs.getlilac.com)
+
+</div>
 Welcome to the Lilac CLI and Agent documentation. This guide provides instructions for both submitting training jobs and running the agent on your compute nodes.
 
 ## Overview

@@ -1,0 +1,153 @@
+
+# Users API
+
+The Users API provides endpoints for managing user accounts and API keys.
+
+## Get Current User Details
+
+Retrieves the details of the currently authenticated user.
+
+**Method:** `GET`
+**Path:** `/api/account/details`
+
+### Response Body
+
+A successful request will return a `200 OK` status code with a JSON body containing the user's details.
+
+```json
+{
+  "user_id": "018f6bda-349a-7b36-9953-2a3a2e4222b2",
+  "username": "testuser",
+  "first_name": "Test",
+  "last_name": "User"
+}
+```
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `user_id` | `string` | The unique identifier for the user. |
+| `username` | `string` | The user's username. |
+| `first_name` | `string` \| `null` | The user's first name. |
+| `last_name` | `string` \| `null` | The user's last name. |
+
+---
+
+## Get User by ID
+
+Retrieves the details of a specific user by their ID.
+
+> [!NOTE]
+> Currently, a user can only retrieve their own details using this endpoint.
+
+**Method:** `GET`
+**Path:** `/api/users/{id}`
+
+### Path Parameters
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `string` | The unique identifier of the user to retrieve. |
+
+### Response Body
+
+A successful request will return a `200 OK` status code with a JSON body containing the user's details.
+
+```json
+{
+  "user_id": "018f6bda-349a-7b36-9953-2a3a2e4222b2",
+  "username": "testuser",
+  "first_name": "Test",
+  "last_name": "User"
+}
+```
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `user_id` | `string` | The unique identifier for the user. |
+| `username` | `string` | The user's username. |
+| `first_name` | `string` \| `null` | The user's first name. |
+| `last_name` | `string` \| `null` | The user's last name. |
+
+---
+
+## List API Keys
+
+Lists all API keys for the currently authenticated user.
+
+**Method:** `GET`
+**Path:** `/api/account/api-keys`
+
+### Response Body
+
+A successful request will return a `200 OK` status code with a JSON body containing a list of API keys.
+
+```json
+[
+  {
+    "id": "018f6bda-349a-7b36-9953-2a3a2e4222b2",
+    "prefix": "lilac_sk_1234567",
+    "created_at": "2023-01-01T00:00:00Z",
+    "last_used_at": "2023-01-01T00:00:00Z",
+    "expires_at": null
+  }
+]
+```
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `string` | The unique identifier for the API key. |
+| `prefix` | `string` | The prefix of the API key. |
+| `created_at` | `string` | The timestamp when the API key was created. |
+| `last_used_at` | `string` \| `null` | The timestamp when the API key was last used. |
+| `expires_at` | `string` \| `null` | The timestamp when the API key expires. |
+
+---
+
+## Create API Key
+
+Creates a new API key for the currently authenticated user.
+
+**Method:** `POST`
+**Path:** `/api/account/api-keys`
+
+### Response Body
+
+A successful request will return a `200 OK` status code with a JSON body containing the new API key.
+
+> [!WARNING]
+> The `key` is only returned once upon creation. Store it securely.
+
+```json
+{
+  "id": "018f6bda-349a-7b36-9953-2a3a2e4222b2",
+  "prefix": "lilac_sk_1234567",
+  "key": "a_very_secret_key",
+  "created_at": "2023-01-01T00:00:00Z"
+}
+```
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `string` | The unique identifier for the API key. |
+| `prefix` | `string` | The prefix of the API key. |
+| `key` | `string` | The secret API key. **This is only returned on creation.** |
+| `created_at` | `string` | The timestamp when the API key was created. |
+
+---
+
+## Delete API Key
+
+Deletes a specific API key for the currently authenticated user.
+
+**Method:** `DELETE`
+**Path:** `/api/account/api-keys/{key_id}`
+
+### Path Parameters
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `key_id` | `string` | The unique identifier of the API key to delete. |
+
+### Response
+
+A successful request will return a `200 OK` status code with an empty body.

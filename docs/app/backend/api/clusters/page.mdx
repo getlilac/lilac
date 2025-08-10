@@ -1,0 +1,275 @@
+
+# Clusters API
+
+The Clusters API provides endpoints for managing clusters, nodes, and API keys.
+
+---
+
+## Endpoints
+
+### Create a new cluster
+
+Creates a new cluster.
+
+```bash
+POST /api/clusters
+```
+
+**Request Body**
+
+| Field                 | Type   | Description              |
+| --------------------- | ------ | ------------------------ |
+| `cluster_name`        | string | The name of the cluster. |
+| `cluster_description` | string | A description of the cluster. |
+
+**Response**
+
+`200 OK`
+```json
+{
+  "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+}
+```
+
+### List all clusters
+
+Lists all available clusters.
+
+```bash
+GET /api/clusters
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "clusters": [
+    {
+      "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "cluster_name": "My Cluster",
+      "total_nodes": 10,
+      "busy_nodes": 5,
+      "total_running_jobs": 5,
+      "cluster_description": "My test cluster"
+    }
+  ]
+}
+```
+
+### Get a specific cluster
+
+Retrieves a specific cluster by its ID.
+
+```bash
+GET /api/clusters/{cluster_id}
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "cluster_name": "My Cluster",
+  "cluster_description": "My test cluster"
+}
+```
+
+### Delete a specific cluster
+
+Deletes a specific cluster by its ID.
+
+```bash
+DELETE /api/clusters/{cluster_id}
+```
+
+**Response**
+
+`200 OK`
+
+### Get detailed information about a cluster
+
+Retrieves detailed information about a specific cluster.
+
+```bash
+GET /api/clusters/{cluster_id}/info
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "cluster_name": "My Cluster",
+  "cluster_description": "My test cluster",
+  "total_nodes": 10,
+  "busy_nodes": 5,
+  "memory_info": { ... },
+  "cpu_info": { ... },
+  "gpu_info": { ... },
+  "job_info": { ... },
+  "created_at": "2025-08-09T05:11:18.910Z",
+  "updated_at": "2025-08-09T05:11:18.910Z"
+}
+```
+
+### List all nodes in a cluster
+
+Lists all nodes registered to a specific cluster.
+
+```bash
+GET /api/clusters/{cluster_id}/nodes
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "cluster_nodes": [
+    {
+      "id": "n1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "node_status": "active",
+      "last_heartbeat": "2025-08-09T05:11:18.910Z",
+      "memory_mb": 16384,
+      "cpu": { ... },
+      "gpu": { ... }
+    }
+  ]
+}
+```
+
+### Node heartbeat
+
+Used by a cluster node to send a heartbeat, indicating it is online.
+
+```bash
+POST /api/nodes/{node_id}/status
+```
+
+**Request Body**
+
+| Field         | Type      | Description              |
+| ------------- | --------- | ------------------------ |
+| `memory_info` | integer   | Memory usage in MB.      |
+| `cpu_info`    | object    | CPU usage information.   |
+| `gpu_info`    | object    | GPU usage information.   |
+| `job_info`    | object    | Information about the running job. |
+
+**Response**
+
+`200 OK`
+```json
+{
+  "assigned_job": {
+    "id": "j1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "docker_uri": "my-docker-image:latest"
+  }
+}
+```
+
+### Get a specific node
+
+Retrieves a specific node by its ID.
+
+```bash
+GET /api/nodes/{node_id}
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "id": "n1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "node_status": "active",
+  "last_heartbeat": "2025-08-09T05:11:18.910Z",
+  "memory_mb": 16384,
+  "cpu": { ... },
+  "gpu": { ... }
+}
+```
+
+### Create an API key for a cluster
+
+Creates a new API key for a specific cluster.
+
+```bash
+POST /api/clusters/{cluster_id}/api-keys
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "id": "k1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "key": "...",
+  "prefix": "lilac_sk",
+  "created_at": "2025-08-09T05:11:18.910Z"
+}
+```
+
+### List API keys for a cluster
+
+Lists all API keys for a specific cluster.
+
+```bash
+GET /api/clusters/{cluster_id}/api-keys
+```
+
+**Response**
+
+`200 OK`
+```json
+[
+  {
+    "id": "k1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "cluster_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "prefix": "lilac_sk",
+    "created_at": "2025-08-09T05:11:18.910Z",
+    "last_used_at": null,
+    "expires_at": null
+  }
+]
+```
+
+### Delete an API key for a cluster
+
+Deletes a specific API key for a cluster.
+
+```bash
+DELETE /api/clusters/{cluster_id}/api-keys/{key_id}
+```
+
+**Response**
+
+`200 OK`
+
+### List jobs for a cluster
+
+Lists all jobs associated with a specific cluster.
+
+```bash
+GET /api/clusters/{cluster_id}/jobs
+```
+
+**Response**
+
+`200 OK`
+```json
+{
+  "cluster_jobs": [
+    {
+      "id": "j1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "name": "My Training Job",
+      "description": "A job to train a model.",
+      "status": "running",
+      ...
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+# Advanced Setup: Manual Installation
+
+This guide covers the process of setting up and running the Lilac backend manually, without using Docker Compose. This is for advanced users who want more control over the setup process.
+
+### Prerequisites
+
+Before you begin, you will need to have the following installed on your system:
+
+*   **Rust**: You can install Rust using the official `rustup` installer.
+*   **PostgreSQL**: You will need a running PostgreSQL instance to back the application.
+
+### Database Setup
+
+1.  **Create the Database**: Create a new PostgreSQL database for the application.
+
+    ```sql
+    CREATE DATABASE lilac;
+    ```
+
+2.  **Run Migrations**: The application uses `sqlx` to manage database migrations. To run the migrations, you will need to have the `sqlx-cli` installed.
+
+    ```bash
+    cargo install sqlx-cli
+    ```
+
+    Once installed, you can run the migrations from the `backend` directory:
+
+    ```bash
+    sqlx migrate run
+    ```
+
+### Configuration
+
+1.  **Create `lilac.toml`**: Create a new file named `lilac.toml` in the `backend` directory. You can use the `lilac.example.toml` file as a template.
+
+    ```toml
+    database_url = "postgres://your-user:your-password@localhost/lilac"
+    http_port = 8081
+    secret_key = "a_very_long_and_secret_key_that_is_at_least_64_characters"
+    ```
+
+2.  **Create `.env`**: Create a new file named `.env` in the `backend` directory. You can use the `.env.example` file as a template. For local development, you will typically want to set `SQLX_OFFLINE=true` to use cached queries.
+
+    ```
+    SQLX_OFFLINE=true
+    ```
+
+### Running the Server
+
+Once you have completed the setup and configuration, you can run the backend server from the `backend` directory:
+
+```bash
+cargo run --bin server
+```
+
+The server should now be running on port 8081.

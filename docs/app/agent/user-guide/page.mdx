@@ -1,0 +1,67 @@
+# User Guide: Submitting Jobs
+
+As a user, your primary interaction with `lilac` will be to configure your API credentials and submit jobs.
+
+### 1. Installation
+
+We provide an easy-to-use installer script for macOS and Linux. To install the `lilac`, run the following command in your terminal. It will automatically detect your operating system, download the correct binary from the latest GitHub release, and install it into `/usr/local/bin`.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/getlilac/lilac/main/scripts/install.sh | sh
+```
+
+The script may ask for your password to move the binary into `/usr/local/bin` using `sudo`. Once installed, you can verify it's working by running:
+
+```bash
+lilac --version
+```
+
+### 2. Configuration
+
+To configure the CLI, run the interactive `configure` command:
+
+```bash
+lilac configure
+```
+
+This will prompt you for the following information:
+
+-   **Lilac API Endpoint**: The URL of the Lilac control plane (e.g., `http://lilac.example.com`).
+-   **User API Key**: Your personal API key for authenticating with the Lilac API. You can get this by going to the UI and clicking the key icon in the sidebar.
+
+This command creates a configuration file at `~/.lilac/config.toml`.
+
+### 3. Submitting a Job
+
+The `submit` command allows you to submit a pre-built Docker image for execution on the cluster.
+
+```bash
+lilac submit
+```
+
+The command will interactively guide you through the submission process, asking for:
+
+-   **Job Name**: A descriptive name for your job.
+-   **Docker Image URI**: The full URI of your job's Docker image (e.g., `your-registry.com/your-repo/your-image:latest`).
+-   **Queue**: The compute queue to submit the job to.
+-   **Resource Requirements**: CPU, memory, and GPU requirements for the job.
+
+> **Note:** The CLI does not build Docker images (yet). You are responsible for building your image and pushing it to a registry that the Lilac agent can access.
+
+### Non-Interactive Submission
+
+For automated workflows, you can provide all job parameters as command-line arguments. If all required arguments are provided along with the `--non-interactive` flag, the job will be submitted directly without interactive prompts.
+
+| Argument | Description | Example |
+|---|---|---|
+| `--name` | The name of the job. | `--name my-training-job` |
+| `--docker-uri` | The Docker image URI for the job. | `--docker-uri my-registry/my-image:latest` |
+| `--queue-id` | The ID of the queue to submit the job to. | `--queue-id 8943e3de-e745-42bc-9c85-a037c58ac03a` |
+| `--cpu` | The amount of CPU to request in millicores. | `--cpu 1000` |
+| `--memory` | The amount of memory to request in MB. | `--memory 2048` |
+| `--gpu-count` | The number of GPUs to request. | `--gpu-count 1` |
+| `--gpu-model` | The model of GPU to request (e.g., A100). | `--gpu-model A100` |
+| `--gpu-memory`| The minimum VRAM per GPU in GB. | `--gpu-memory 16` |
+| `--non-interactive` | A flag to skip all interactive prompts. | `--non-interactive` |
+
+If you provide arguments without the `--non-interactive` flag, they will be used as default values in the interactive prompts.

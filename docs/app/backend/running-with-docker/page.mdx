@@ -1,0 +1,19 @@
+# Running with Docker
+
+The recommended way to run the Lilac backend is with the provided Docker Compose file. This section provides a more detailed look at the services defined in `docker/docker-compose.dev.yml`.
+
+### Services
+
+The `docker-compose.dev.yml` file defines three services:
+
+*   **`backend`**: The main Lilac backend application. This service builds the `backend/Dockerfile` and runs the server on port 8081.
+*   **`web`**: The Lilac web UI. This service builds the `frontend/Dockerfile` and serves the UI on port 8080.
+*   **`db`**: A PostgreSQL database for the backend to use. This service is only started if you use the `--profile postgres` flag.
+
+### Networking
+
+All three services are connected to a default Docker network, which allows them to communicate with each other. The `backend` service connects to the database at `db:5432`, and the `web` service connects to the backend at `backend:8081`.
+
+### Volumes
+
+The `db` service uses a named volume (`pgdata`) to persist the PostgreSQL data. This ensures that your data is not lost when you stop and restart the services.

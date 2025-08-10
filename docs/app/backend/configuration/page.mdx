@@ -1,0 +1,15 @@
+# Backend Configuration
+
+The Lilac backend is configured using a `lilac.toml` file located in the `backend` directory. The following options are available:
+
+| Option              | Description                                                                 | Example                                                              |
+| ------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `database_url`      | The connection string for the PostgreSQL database.                          | `"postgres://your-user:your-password@localhost/lilac"`               |
+| `http_port`         | The port that the HTTP server will listen on.                               | `8080`                                                               |
+| `secret_key`        | A secret key used for signing JWTs and encrypting session data.             | `"a_very_long_and_secret_key_that_is_at_least_64_characters"`        |
+| `log_format`        | The format for logging. Can be `pretty` or `json`.                          | `"pretty"`                                                           |
+| `log_level`         | The minimum log level to output. Can be `trace`, `debug`, `info`, `warn`, or `error`. | `"info"`                                                             |
+| `allowed_usernames` | A list of usernames that are allowed to sign up. If not set, anyone can sign up. | `["admin", "user1"]`                                                 |
+| `disable_sign_up`   | If set to `true`, no new users will be able to sign up.                     | `false`                                                              |
+
+From here, you can begin to configure your Lilac instance.

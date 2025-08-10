@@ -1,0 +1,28 @@
+# Getting Started with the Backend
+
+This guide will walk you through the recommended process of setting up and running the Lilac backend services using Docker Compose. This is the fastest and easiest way to get started.
+
+### 1. Create the Configuration File
+
+Before you can run the backend, you need to create a `lilac.toml` configuration file. You can do this by copying the example file:
+
+```bash
+cp ./backend/lilac.example.toml ./backend/lilac.toml
+```
+
+### 2. Run with Docker Compose
+
+With the configuration in place, you can now run the entire Lilac platform with a single command. This will start the backend server, the web UI, and a local PostgreSQL database.
+
+```bash
+docker compose -f ./docker/docker-compose.dev.yml --profile postgres up
+```
+
+The backend will be running on `http://localhost:8081`, and the web UI will be available at `http://localhost:8080`.
+
+### Bringing Your Own Database
+
+If you would prefer to use your own PostgreSQL database, you can modify the `LILAC__DATABASE_URL` environment variable in the `docker-compose.dev.yml` file to point to your database. Then, you can start the platform without the local database:
+
+```bash
+docker compose -f ./docker/docker-compose.dev.yml up

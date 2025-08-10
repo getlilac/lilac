@@ -1,0 +1,129 @@
+# Queues API
+
+The Queues API allows for the creation, retrieval, updating, and deletion of job queues. You can also use it to list all jobs associated with a specific queue.
+
+## Create a new queue
+
+**Method:** `POST`
+**Path:** `/api/queues`
+
+This endpoint creates a new job queue.
+
+#### Request Body
+
+```json
+{
+  "name": "string",
+  "priority": "integer",
+  "cluster_targets": ["ClusterId"]
+}
+```
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+{
+  "id": "QueueId",
+  "name": "string",
+  "priority": "integer",
+  "cluster_targets": ["ClusterId"]
+}
+```
+
+## List all queues
+
+**Method:** `GET`
+**Path:** `/api/queues`
+
+This endpoint retrieves a list of all job queues.
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+[
+  {
+    "id": "QueueId",
+    "name": "string",
+    "priority": "integer",
+    "cluster_targets": ["ClusterId"]
+  }
+]
+```
+
+## Get a specific queue
+
+**Method:** `GET`
+**Path:** `/api/queues/{queue_id}`
+
+This endpoint retrieves details for a specific job queue.
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+{
+  "id": "QueueId",
+  "name": "string",
+  "priority": "integer",
+  "cluster_targets": ["ClusterId"]
+}
+```
+
+## Update a queue
+
+**Method:** `PUT`
+**Path:** `/api/queues/{queue_id}`
+
+This endpoint updates an existing job queue.
+
+#### Request Body
+
+```json
+{
+  "name": "string",
+  "priority": "integer",
+  "cluster_targets": ["ClusterId"]
+}
+```
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+{
+  "id": "QueueId",
+  "name": "string",
+  "priority": "integer",
+  "cluster_targets": ["ClusterId"]
+}
+```
+
+## Delete a queue
+
+**Method:** `DELETE`
+**Path:** `/api/queues/{queue_id}`
+
+This endpoint deletes a specific job queue.
+
+#### Response
+
+**Status:** `200 OK`
+
+## List jobs in a queue
+
+**Method:** `GET`
+**Path:** `/api/queues/{queue_id}/jobs`
+
+This endpoint retrieves all jobs associated with a specific queue.
+
+#### Response
+
+**Status:** `200 OK`
+
+Returns a list of training job objects.

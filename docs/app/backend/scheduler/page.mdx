@@ -1,0 +1,19 @@
+# The Scheduler
+
+The scheduler is a critical background process that runs in a continuous loop to manage the state of the cluster and ensure that jobs are allocated to available nodes. It is responsible for both scheduling new jobs and cleaning up old or failed ones.
+
+### Scheduler Cycle
+
+The scheduler runs in a continuous cycle, performing the following actions:
+
+1.  **Cleanup**: The scheduler runs a series of cleanup tasks to handle various edge cases and ensure the cluster remains in a healthy state.
+2.  **Job Allocation**: The scheduler iterates through the queues in priority order and attempts to allocate queued jobs to available nodes in the target clusters.
+
+### Cleanup Tasks
+
+The scheduler performs the following cleanup tasks at the beginning of each cycle:
+
+*   **Dead Node Cleanup**: The scheduler identifies and removes nodes that have not sent a heartbeat in over 90 seconds. Any jobs that were assigned to these nodes are re-queued.
+*   **Stale "Starting" Job Cleanup**: The scheduler cleans up jobs that are stuck in the "starting" state. If a job is assigned to a non-existent node or queue, it is re-queued or cancelled.
+*   **Preempted Job Cleanup**: The scheduler identifies jobs that were running on a node but are no longer assigned to it (e.g., due to a node restart). These jobs are re-queued.
+*   **Orphaned Queued Job Cleanup**: The scheduler cancels any queued jobs that are not associated with a valid queue.
