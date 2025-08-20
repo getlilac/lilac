@@ -1,5 +1,5 @@
 import CreateClusterModal from '../components/create-cluster-modal';
-import { useListClusters } from '@/services';
+import { useDeleteCluster, useListClusters } from '@/services';
 import {
   Container,
   ContainerAction,
@@ -17,6 +17,61 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { generatePath, Link } from 'react-router-dom';
 import { Routes } from '@/constants';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
+const DeleteClusterButton = ({ clusterId }: { clusterId: string }) => {
+  const { mutate, isPending } = useDeleteCluster({
+    onSuccess: () => {
+      toast.success('Cluster deleted successfully');
+    },
+  });
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant='destructive' size='sm'>
+          Delete
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+        </DialogHeader>
+        <p>
+          Are you sure you want to delete this cluster? This action cannot be
+          undone.
+        </p>
+        <DialogClose>
+          <div className='mt-4 flex justify-end space-x-2'>
+            <Button
+              variant='outline'
+              onClick={() => {
+                // Close dialog
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              onClick={() => mutate({ clusterId })}
+              disabled={isPending}
+            >
+              {isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </div>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const columnHelper = createColumnHelper<ClusterSummary>();
 const CLUSTER_COLUMNS: ColumnDef<ClusterSummary>[] = [
@@ -63,6 +118,13 @@ const CLUSTER_COLUMNS: ColumnDef<ClusterSummary>[] = [
           {cell.renderValue()}
         </Badge>
       );
+    },
+  }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => {
+      return <DeleteClusterButton clusterId={row.original.clusterId} />;
     },
   }),
 ] as Array<ColumnDef<ClusterSummary>>;
