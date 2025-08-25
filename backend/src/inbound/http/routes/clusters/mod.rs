@@ -310,7 +310,7 @@ mod tests {
         let user_id = UserId::generate();
         let token = "user-token";
         let cluster_id = ClusterId::generate();
-        let nodes_to_return = vec![ClusterNode::default()];
+        let nodes_to_return = vec![ClusterNode::new_mock()];
 
         let mut mock_cluster_service = MockClusterService::new();
         mock_cluster_service
@@ -407,7 +407,7 @@ mod tests {
         let user_id = UserId::generate();
         let token = "user-token";
         let cluster_id = ClusterId::generate();
-        let jobs_to_return = vec![TrainingJob::default()];
+        let jobs_to_return = vec![TrainingJob::new_mock()];
 
         let mut mock_cluster_service = MockClusterService::new();
         mock_cluster_service
@@ -440,7 +440,7 @@ mod tests {
         let node_id = NodeId::generate();
         let node_to_return = ClusterNode {
             id: node_id,
-            ..Default::default()
+            ..ClusterNode::new_mock()
         };
 
         let mut mock_cluster_service = MockClusterService::new();
@@ -478,7 +478,7 @@ mod tests {
                 current_job_id: job_id,
                 status: TrainingJobStatus::Running,
             }),
-            ..Default::default()
+            ..HttpClusterNodeHeartbeat::new_mock()
         };
         let mut mock_cluster_service = mock_cluster_auth(cluster_id, cluster_token);
         mock_cluster_service
@@ -487,7 +487,7 @@ mod tests {
             .returning(move |_| {
                 Ok(ClusterNode {
                     assigned_job_id: Some(job_id),
-                    ..Default::default()
+                    ..ClusterNode::new_mock()
                 })
             });
         let mut mock_job_service = MockTrainingJobService::new();
@@ -498,7 +498,7 @@ mod tests {
             .returning(move |_| {
                 Ok(TrainingJob {
                     id: job_id,
-                    ..Default::default()
+                    ..TrainingJob::new_mock()
                 })
             });
         let app = setup_test_app(
@@ -525,9 +525,7 @@ mod tests {
         let cluster_id = ClusterId::generate();
         let node_id = NodeId::generate();
         let cluster_token = "cluster-api-key";
-        let heartbeat_body = HttpClusterNodeHeartbeat {
-            ..Default::default()
-        };
+        let heartbeat_body = HttpClusterNodeHeartbeat::new_mock();
         let mut mock_cluster_service = mock_cluster_auth(cluster_id, cluster_token);
         mock_cluster_service
             .expect_update_node_status()
@@ -535,7 +533,7 @@ mod tests {
             .returning(move |_| {
                 Ok(ClusterNode {
                     assigned_job_id: None,
-                    ..Default::default()
+                    ..ClusterNode::new_mock()
                 })
             });
         let mock_job_service = MockTrainingJobService::new();

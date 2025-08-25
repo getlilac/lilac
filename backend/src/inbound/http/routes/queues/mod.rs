@@ -97,7 +97,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_list_queues_route() {
-        let queues_to_return = vec![Queue::default()];
+        let queues_to_return = vec![Queue::new_mock()];
         let mut mock_queue_service = MockQueueService::new();
         mock_queue_service
             .expect_list_all_queues()
@@ -120,7 +120,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_queue_route() {
-        let queue_to_return = Queue::default();
+        let queue_to_return = Queue::new_mock();
         let queue_id = queue_to_return.id;
         let mut mock_queue_service = MockQueueService::new();
         mock_queue_service
@@ -208,7 +208,7 @@ mod tests {
     #[tokio::test]
     async fn test_list_queue_jobs_route() {
         let queue_id = QueueId::generate();
-        let jobs_to_return = vec![TrainingJob::default()];
+        let jobs_to_return = vec![TrainingJob::new_mock()];
         let mut mock_queue_service = MockQueueService::new();
         mock_queue_service
             .expect_list_queues_jobs()

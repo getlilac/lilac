@@ -63,8 +63,8 @@ pub struct GetTrainingJobsFilters {
 }
 
 #[cfg(test)]
-impl Default for TrainingJob {
-    fn default() -> Self {
+impl TrainingJob {
+    pub fn new_mock() -> Self {
         Self {
             id: JobId::generate(),
             name: "Default Job".to_string(),

@@ -100,7 +100,7 @@ mod tests {
         mock_job_service
             .expect_create()
             .times(1)
-            .returning(|_| Ok(TrainingJob::default()));
+            .returning(|_| Ok(TrainingJob::new_mock()));
 
         let app = setup_test_app(mock_job_service, mock_user_service, Default::default());
 
@@ -121,7 +121,7 @@ mod tests {
     async fn test_list_training_jobs_route() {
         let user_id = UserId::generate();
         let token = "user-token";
-        let jobs_to_return = vec![TrainingJob::default()];
+        let jobs_to_return = vec![TrainingJob::new_mock()];
 
         let mut mock_job_service = MockTrainingJobService::new();
         mock_job_service
@@ -152,7 +152,7 @@ mod tests {
     async fn test_get_training_job_route() {
         let user_id = UserId::generate();
         let token = "user-token";
-        let job_to_return = TrainingJob::default();
+        let job_to_return = TrainingJob::new_mock();
         let job_id = job_to_return.id;
 
         let mut mock_job_service = MockTrainingJobService::new();

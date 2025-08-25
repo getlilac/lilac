@@ -244,8 +244,8 @@ pub struct ClusterDetails {
 }
 
 #[cfg(test)]
-impl Default for Cpu {
-    fn default() -> Self {
+impl Cpu {
+    pub fn new_mock() -> Self {
         Self {
             manufacturer: CpuManufacturer::Intel,
             architecture: Architecture::X86_64,
@@ -255,27 +255,15 @@ impl Default for Cpu {
 }
 
 #[cfg(test)]
-impl Default for Gpu {
-    fn default() -> Self {
-        Self {
-            manufacturer: GpuManufacturer::Nvidia,
-            model: GpuModel::A100,
-            count: 1,
-            memory_mb: 40960,
-        }
-    }
-}
-
-#[cfg(test)]
-impl Default for ClusterNode {
-    fn default() -> Self {
+impl ClusterNode {
+    pub fn new_mock() -> Self {
         Self {
             id: NodeId::generate(),
             cluster_id: ClusterId::generate(),
             node_status: NodeStatus::Available,
             heartbeat_timestamp: Utc::now(),
             memory_mb: 0,
-            cpu: Cpu::default(),
+            cpu: Cpu::new_mock(),
             gpu: None,
             created_at: Utc::now(),
             updated_at: Utc::now(),

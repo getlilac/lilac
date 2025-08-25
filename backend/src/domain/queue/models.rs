@@ -28,8 +28,8 @@ pub struct UpdateQueueRequest {
 }
 
 #[cfg(test)]
-impl Default for Queue {
-    fn default() -> Self {
+impl Queue {
+    pub fn new_mock() -> Self {
         Self {
             id: QueueId::generate(),
             name: "default-queue".to_string(),

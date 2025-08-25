@@ -233,11 +233,11 @@ impl From<Vec<TrainingJob>> for ListClusterJobsHttpResponse {
 }
 
 #[cfg(test)]
-impl Default for HttpClusterNodeHeartbeat {
-    fn default() -> Self {
+impl HttpClusterNodeHeartbeat {
+    pub fn new_mock() -> Self {
         Self {
             memory_info: 0,
-            cpu_info: Cpu::default(),
+            cpu_info: Cpu::new_mock(),
             gpu_info: None,
             job_info: None,
         }
