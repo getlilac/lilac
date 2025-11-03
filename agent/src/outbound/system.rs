@@ -65,7 +65,10 @@ impl HybridMonitor {
     }
 
     fn parse_gpu_model(model_name: &str) -> GpuModel {
-        for model in GpuModel::iter() {
+        let mut models: Vec<GpuModel> = GpuModel::iter().collect();
+        models.sort_by_key(|m| std::cmp::Reverse(m.to_string().len()));
+
+        for model in models {
             if model_name.contains(&model.to_string()) {
                 return model;
             }
