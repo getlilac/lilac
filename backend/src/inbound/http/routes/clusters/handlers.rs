@@ -145,6 +145,18 @@ pub async fn cluster_node_heartbeat(
         })
         .await?;
 
+    // tracing::info!(
+    //     node_id = %node.id,
+    //     cluster_id = %node.cluster_id,
+    //     node_status = ?node.node_status,
+    //     memory_mb = node.memory_mb,
+    //     cpu_millicores = node.cpu.millicores,
+    //     gpus = ?node.gpus,
+    //     assigned_job_id = ?node.assigned_job_id,
+    //     reported_job_id = ?node.reported_job_id,
+    //     "Node heartbeat received and updated"
+    // );
+
     let assigned_job = if let Some(job_id) = node.assigned_job_id {
         let job_details = training_job_service.get_training_job_by_id(&job_id).await?;
         Some(HttpJobDetails::from(job_details))

@@ -83,19 +83,15 @@ export function NodeOverview(props: NodeOverviewProps) {
                 value: <span>{node.cpu.millicores}m</span>,
               },
               {
-                key: 'GPU Manufacturer',
-                value: node.gpu ? (
-                  <span>{node.gpu.manufacturer}</span>
-                ) : (
-                  <span>&ndash;</span>
-                ),
-              },
-              {
-                key: 'GPU',
-                value: node.gpu ? (
-                  <span>
-                    {node.gpu?.count}x{node.gpu.model} ({node.gpu.memoryMb}GB)
-                  </span>
+                key: 'GPUs',
+                value: node.gpus.length > 0 ? (
+                  <div className='space-y-1'>
+                    {node.gpus.map((gpu, index) => (
+                      <div key={index}>
+                        {gpu.count}x {gpu.manufacturer} {gpu.model} ({Math.round(gpu.memoryMb / 1024)}GB)
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <span>&ndash;</span>
                 ),

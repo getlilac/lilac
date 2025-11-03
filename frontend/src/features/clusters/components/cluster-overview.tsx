@@ -310,21 +310,20 @@ export function ClusterOverview(props: ClusterOverviewProps) {
                 cell: ({ cell }) => <span>{cell.renderValue() as string}</span>,
               },
               {
-                accessorKey: 'gpu.manufacturer',
-                header: 'GPU Manufacturer',
-                cell: ({ cell }) => <span>{cell.renderValue() as string}</span>,
-              },
-              {
-                accessorKey: 'gpu',
+                accessorKey: 'gpus',
                 header: 'GPUs',
                 cell: ({ cell }) => {
-                  const gpu = cell.getValue() as ClusterNode['gpu'] | undefined;
-                  if (gpu === undefined || gpu == null) {
-                    return cell.renderValue();
+                  const gpus = cell.getValue() as ClusterNode['gpus'];
+                  if (!gpus || gpus.length === 0) {
+                    return <span>&ndash;</span>;
                   }
                   return (
                     <span>
-                      {gpu.count}x{gpu.model} ({gpu.memoryMb}GB)
+                      {gpus.map((gpu, idx) => (
+                        <div key={idx}>
+                          {gpu.count}x {gpu.manufacturer} {gpu.model} ({Math.round(gpu.memoryMb / 1024)}GB)
+                        </div>
+                      ))}
                     </span>
                   );
                 },

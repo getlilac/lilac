@@ -81,7 +81,16 @@ impl ClusterRepository for PostgresClusterRepository {
     ) -> Result<ClusterDetails, ClusterRepositoryError> {
         let record = sqlx::query_as!(
             ClusterDetailsRecord,
-            r#"SELECT c.cluster_id, c.cluster_name, c.cluster_description, c.created_at, c.updated_at,
+            r#"
+            WITH node_gpu_counts AS (
+                SELECT
+                    node_id,
+                    cluster_id,
+                    node_status,
+                    COALESCE((SELECT SUM((g.count)::bigint) FROM unnest(gpus) AS g), 0)::bigint AS gpu_count
+                FROM cluster_nodes
+            )
+            SELECT c.cluster_id, c.cluster_name, c.cluster_description, c.created_at, c.updated_at,
                 COUNT(DISTINCT n.node_id) AS "total_nodes!: i64",
                 COUNT(DISTINCT n.node_id) FILTER (WHERE n.node_status = 'busy') AS "busy_nodes!: i64",
                 COUNT(running_jobs.id) AS "total_running_jobs!: i64",
@@ -89,10 +98,11 @@ impl ClusterRepository for PostgresClusterRepository {
                 COALESCE(SUM((n.cpu).millicores) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_millicores!: i64",
                 COALESCE(SUM(n.memory_mb), 0) AS "total_memory_mb!: i64",
                 COALESCE(SUM(n.memory_mb) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_memory_mb!: i64",
-                COALESCE(SUM((unnest(n.gpus)).count), 0) AS "total_gpus!: i64",
-                COALESCE(SUM((unnest(n.gpus)).count) FILTER (WHERE n.node_status = 'busy'), 0) AS "used_gpus!: i64"
+                COALESCE(SUM(ngc.gpu_count), 0)::bigint AS "total_gpus!: i64",
+                COALESCE(SUM(ngc.gpu_count) FILTER (WHERE ngc.node_status = 'busy'), 0)::bigint AS "used_gpus!: i64"
             FROM clusters c
             LEFT JOIN cluster_nodes n ON c.cluster_id = n.cluster_id
+            LEFT JOIN node_gpu_counts ngc ON n.node_id = ngc.node_id
             LEFT JOIN training_jobs running_jobs ON running_jobs.status = 'running' AND n.node_id = running_jobs.node_id
             WHERE c.cluster_id = $1
             GROUP BY c.cluster_id;

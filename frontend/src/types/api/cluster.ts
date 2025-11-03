@@ -60,6 +60,13 @@ export interface ClusterApiKey {
   expiresAt?: string;
 }
 
+export interface Gpu {
+  manufacturer: string;
+  model: string;
+  count: number;
+  memoryMb: number;
+}
+
 export interface ClusterNode {
   id: string;
   clusterId: string;
@@ -71,10 +78,5 @@ export interface ClusterNode {
     architecture: string;
     millicores: number;
   };
-  gpu?: {
-    manufacturer: string;
-    model: string;
-    count: number;
-    memoryMb: number;
-  };
+  gpus: Gpu[];
 }

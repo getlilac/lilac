@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT node_id, cluster_id, node_status as \"node_status: NodeStatusRecord\", heartbeat_timestamp, memory_mb, cpu as \"cpu: CpuConfigurationRecord\", gpu as \"gpu: GpuConfigurationRecord\", created_at, updated_at, assigned_job_id, reported_job_id\n            FROM cluster_nodes\n            ",
+  "query": "\n            SELECT node_id, cluster_id, node_status as \"node_status: NodeStatusRecord\", heartbeat_timestamp, memory_mb, cpu as \"cpu: CpuConfigurationRecord\", gpus as \"gpus: Vec<GpuConfigurationRecord>\", created_at, updated_at, assigned_job_id, reported_job_id\n            FROM cluster_nodes\n            WHERE node_id = $1\n            ",
   "describe": {
     "columns": [
       {
@@ -89,60 +89,67 @@
       },
       {
         "ordinal": 6,
-        "name": "gpu: GpuConfigurationRecord",
+        "name": "gpus: Vec<GpuConfigurationRecord>",
         "type_info": {
           "Custom": {
-            "name": "gpu_configuration",
+            "name": "gpu_configuration[]",
             "kind": {
-              "Composite": [
-                [
-                  "manufacturer",
-                  {
-                    "Custom": {
-                      "name": "gpu_manufacturer",
-                      "kind": {
-                        "Enum": [
-                          "Nvidia",
-                          "AMD",
-                          "Habana"
-                        ]
-                      }
-                    }
+              "Array": {
+                "Custom": {
+                  "name": "gpu_configuration",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "manufacturer",
+                        {
+                          "Custom": {
+                            "name": "gpu_manufacturer",
+                            "kind": {
+                              "Enum": [
+                                "Nvidia",
+                                "AMD",
+                                "Habana"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      [
+                        "model_name",
+                        {
+                          "Custom": {
+                            "name": "gpu_model",
+                            "kind": {
+                              "Enum": [
+                                "Radeon Pro V520",
+                                "Gaudi HL-205",
+                                "A100",
+                                "A10G",
+                                "B200",
+                                "H100",
+                                "H200",
+                                "L4",
+                                "L40S",
+                                "T4",
+                                "T4g",
+                                "V100"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      [
+                        "memory_mb",
+                        "Int4"
+                      ],
+                      [
+                        "count",
+                        "Int4"
+                      ]
+                    ]
                   }
-                ],
-                [
-                  "model_name",
-                  {
-                    "Custom": {
-                      "name": "gpu_model",
-                      "kind": {
-                        "Enum": [
-                          "Radeon Pro V520",
-                          "Gaudi HL-205",
-                          "A100",
-                          "A10G",
-                          "B200",
-                          "H100",
-                          "H200",
-                          "L4",
-                          "L40S",
-                          "T4",
-                          "T4g",
-                          "V100"
-                        ]
-                      }
-                    }
-                  }
-                ],
-                [
-                  "memory_mb",
-                  "Int4"
-                ],
-                [
-                  "count",
-                  "Int4"
-                ]
-              ]
+                }
+              }
             }
           }
         }
@@ -169,7 +176,9 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Uuid"
+      ]
     },
     "nullable": [
       false,
@@ -178,12 +187,12 @@
       false,
       false,
       false,
-      true,
+      false,
       false,
       false,
       true,
       true
     ]
   },
-  "hash": "385034826d30b2fd66f906d67b67ab25bf1e9eb1273fb552f61e48c03c8c1832"
+  "hash": "5500b5021323f2442fa792e8857eed5423f0514f4fbc199568ea805e920be10d"
 }
