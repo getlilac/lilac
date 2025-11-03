@@ -81,6 +81,9 @@ pub enum GpuModel {
     #[serde(rename = "A10G")]
     #[strum(serialize = "A10G")]
     A10G,
+    #[serde(rename = "A30")]
+    #[strum(serialize = "A30")]
+    A30,
     #[serde(rename = "B200")]
     #[strum(serialize = "B200")]
     B200,
@@ -93,6 +96,9 @@ pub enum GpuModel {
     #[serde(rename = "L4")]
     #[strum(serialize = "L4")]
     L4,
+    #[serde(rename = "L40")]
+    #[strum(serialize = "L40")]
+    L40,
     #[serde(rename = "L40S")]
     #[strum(serialize = "L40S")]
     L40S,
