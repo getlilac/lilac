@@ -51,9 +51,10 @@ impl AgentSchedulerAdapter {
             let mem_ok = node.memory_mb >= requirements.memory_mb;
             let gpu_ok = match &requirements.gpus {
                 None => true,
-                Some(req_gpu) => match &node.gpu {
-                    Some(node_gpu) => node_gpu.count >= req_gpu.count,
-                    None => false,
+                Some(req_gpu) => {
+                    // Sum all GPU counts across all GPU types on the node
+                    let total_gpu_count: i32 = node.gpus.iter().map(|g| g.count).sum();
+                    total_gpu_count >= req_gpu.count
                 },
             };
 

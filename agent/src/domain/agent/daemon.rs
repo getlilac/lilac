@@ -1,9 +1,10 @@
 use crate::{
     domain::agent::{
-        models::{HeartbeatRequest, JobInfo, JobStatus},
+        models::{HeartbeatRequest, JobInfo, JobStatus, Gpu, GpuManufacturer, GpuModel},
         ports::{ControlPlaneApi, JobExecutor, SystemMonitor},
     },
 };
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::{
@@ -72,10 +73,31 @@ where
             }
 
             let current_job_info = self.current_job.lock().unwrap().clone();
+            println!("[DAEMON] GPU resources: {:?}", resources.gpus);
+
+            // Aggregate GPUs by (manufacturer, model, memory_mb)
+            let mut gpu_counts: HashMap<(GpuManufacturer, GpuModel, i32), i32> = HashMap::new();
+            for g in &resources.gpus {
+                let key = (g.manufacturer.clone(), g.model.clone(), g.memory_mb);
+                *gpu_counts.entry(key).or_insert(0) += g.count.max(1);
+            }
+
+            let gpu_info: Vec<Gpu> = gpu_counts
+                .into_iter()
+                .map(|((manufacturer, model, memory_mb), count)| Gpu {
+                    manufacturer,
+                    model,
+                    count,
+                    memory_mb,
+                })
+                .collect();
+
+            println!("[DAEMON] GPU info: {:?}", gpu_info);
+
             let request = HeartbeatRequest {
                 memory_info: resources.memory_mb,
                 cpu_info: resources.cpu.clone(),
-                gpu_info: resources.gpus.first().cloned(),
+                gpu_info,
                 job_info: current_job_info,
             };
 

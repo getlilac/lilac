@@ -119,7 +119,7 @@ impl From<Vec<ClusterSummary>> for ListClustersHttpResponse {
 pub struct HttpClusterNodeHeartbeat {
     pub memory_info: i32,
     pub cpu_info: Cpu,
-    pub gpu_info: Option<Gpu>,
+    pub gpu_info: Vec<Gpu>,
     pub job_info: Option<JobInfo>,
 }
 
@@ -153,7 +153,7 @@ pub struct HttpClusterNode {
     pub last_heartbeat: DateTime<Utc>,
     pub memory_mb: i32,
     pub cpu: Cpu,
-    pub gpu: Option<Gpu>,
+    pub gpus: Vec<Gpu>,
 }
 
 impl From<ClusterNode> for HttpClusterNode {
@@ -165,7 +165,7 @@ impl From<ClusterNode> for HttpClusterNode {
             last_heartbeat: value.heartbeat_timestamp,
             memory_mb: value.memory_mb,
             cpu: value.cpu,
-            gpu: value.gpu,
+            gpus: value.gpus,
         }
     }
 }
@@ -238,7 +238,7 @@ impl HttpClusterNodeHeartbeat {
         Self {
             memory_info: 0,
             cpu_info: Cpu::new_mock(),
-            gpu_info: None,
+            gpu_info: vec![],
             job_info: None,
         }
     }

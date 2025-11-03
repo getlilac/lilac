@@ -284,7 +284,7 @@ pub struct ClusterNodeRecord {
     pub heartbeat_timestamp: DateTime<Utc>,
     pub memory_mb: i32,
     pub cpu: CpuConfigurationRecord,
-    pub gpu: Option<GpuConfigurationRecord>,
+    pub gpus: Vec<GpuConfigurationRecord>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub assigned_job_id: Option<uuid::Uuid>,
@@ -307,12 +307,12 @@ impl From<ClusterNodeRecord> for ClusterNode {
                 architecture: record.cpu.architecture.into(),
                 millicores: record.cpu.millicores,
             },
-            gpu: record.gpu.map(|gpu| Gpu {
+            gpus: record.gpus.into_iter().map(|gpu| Gpu {
                 manufacturer: gpu.manufacturer.into(),
                 model: gpu.model_name.into(),
                 count: gpu.count,
                 memory_mb: gpu.memory_mb,
-            }),
+            }).collect(),
             created_at: record.created_at,
             updated_at: record.updated_at,
             assigned_job_id: record.assigned_job_id.map(Into::into),

@@ -157,7 +157,7 @@ pub struct ClusterNode {
     pub heartbeat_timestamp: DateTime<Utc>,
     pub memory_mb: i32,
     pub cpu: Cpu,
-    pub gpu: Option<Gpu>,
+    pub gpus: Vec<Gpu>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub assigned_job_id: Option<JobId>,
@@ -170,7 +170,7 @@ impl ClusterNode {
         cluster_id: ClusterId,
         memory_mb: i32,
         cpu: Cpu,
-        gpu: Option<Gpu>,
+        gpus: Vec<Gpu>,
     ) -> Self {
         Self {
             id: node_id,
@@ -179,7 +179,7 @@ impl ClusterNode {
             heartbeat_timestamp: Utc::now(),
             memory_mb,
             cpu,
-            gpu,
+            gpus,
             created_at: Utc::now(),
             updated_at: Utc::now(),
             assigned_job_id: None,
@@ -201,7 +201,7 @@ pub struct UpdateNodeStatusRequest {
     pub heartbeat_timestamp: DateTime<Utc>,
     pub memory_info: i32,
     pub cpu_info: Cpu,
-    pub gpu_info: Option<Gpu>,
+    pub gpu_info: Vec<Gpu>,
     pub job_info: Option<JobInfo>,
 }
 
@@ -264,7 +264,7 @@ impl ClusterNode {
             heartbeat_timestamp: Utc::now(),
             memory_mb: 0,
             cpu: Cpu::new_mock(),
-            gpu: None,
+            gpus: vec![],
             created_at: Utc::now(),
             updated_at: Utc::now(),
             assigned_job_id: None,

@@ -51,7 +51,7 @@ pub struct Cpu {
 }
 
 #[derive(
-    Clone, Debug, Serialize, Deserialize, PartialEq, Eq, strum::EnumString, strum::Display,
+    Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, strum::EnumString, strum::Display,
 )]
 pub enum GpuManufacturer {
     #[serde(rename = "Nvidia")]
@@ -66,7 +66,7 @@ pub enum GpuManufacturer {
 }
 
 #[derive(
-    Clone, Debug, Serialize, Deserialize, PartialEq, Eq, strum::EnumString, strum::Display, strum::EnumIter,
+    Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, strum::EnumString, strum::Display, strum::EnumIter,
 )]
 pub enum GpuModel {
     #[serde(rename = "Radeon Pro V520")]
@@ -121,7 +121,7 @@ pub struct Gpu {
 pub struct HeartbeatRequest {
     pub memory_info: i32,
     pub cpu_info: Cpu,
-    pub gpu_info: Option<Gpu>,
+    pub gpu_info: Vec<Gpu>,
     pub job_info: Option<JobInfo>,
 }
 
