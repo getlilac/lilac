@@ -50,7 +50,11 @@ jobs:
       - name: Update Cargo.toml version
         run: |
           VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//')
-          sed -i "s/^version = .*/version = \"$VERSION\"/" agent/Cargo.toml
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            sed -i '' "s/^version = .*/version = \"$VERSION\"/" agent/Cargo.toml
+          else
+            sed -i "s/^version = .*/version = \"$VERSION\"/" agent/Cargo.toml
+          fi
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
