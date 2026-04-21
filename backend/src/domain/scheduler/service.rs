@@ -259,3 +259,236 @@ impl SchedulerService {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::{
+        cluster::{
+            models::{ClusterId, ClusterNode},
+            ports::MockClusterRepository,
+        },
+        queue::{models::Queue, ports::MockQueueRepository},
+        training_job::{
+            models::{TrainingJob, TrainingJobStatus},
+            ports::MockTrainingJobRepository,
+        },
+    };
+    use mockall::predicate::{eq};
+
+    fn build_service(
+        job_repo: Arc<MockTrainingJobRepository>,
+        queue_repo: Arc<MockQueueRepository>,
+        cluster_repo: Arc<MockClusterRepository>,
+    ) -> SchedulerService {
+        let agent_adapter = Arc::new(AgentSchedulerAdapter::new(cluster_repo.clone()));
+        SchedulerService::new(job_repo, queue_repo, cluster_repo, agent_adapter)
+    }
+
+    #[tokio::test]
+    async fn cleanup_dead_nodes_requeues_jobs_and_deletes_stale_node() {
+
+        // Create a stale node
+        let mut stale_node = ClusterNode::new_mock();
+        stale_node.heartbeat_timestamp = Utc::now() - chrono::Duration::seconds(91);
+        stale_node.assigned_job_id = Some(crate::domain::training_job::models::JobId::generate());
+        stale_node.reported_job_id = Some(crate::domain::training_job::models::JobId::generate());
+
+        let assigned_job_id = stale_node.assigned_job_id.clone().unwrap();
+        let reported_job_id = stale_node.reported_job_id.clone().unwrap();
+        let stale_node_id = stale_node.id.clone();
+
+        let mut job_repo = MockTrainingJobRepository::new();
+        job_repo
+            .expect_reset_job_status()
+            .with(eq(assigned_job_id.clone()))
+            .times(1)
+            .returning(|_| Ok(()));
+        job_repo
+            .expect_reset_job_status()
+            .with(eq(reported_job_id.clone()))
+            .times(1)
+            .returning(|_| Ok(()));
+
+        let queue_repo = MockQueueRepository::new();
+
+        let mut cluster_repo = MockClusterRepository::new();
+        cluster_repo
+            .expect_list_all_nodes()
+            .times(1)
+            .returning(move || Ok(vec![stale_node.clone()]));
+        cluster_repo
+            .expect_delete_cluster_node()
+            .with(eq(stale_node_id.clone()))
+            .times(1)
+            .returning(|_| Ok(()));
+
+        let service = build_service(
+            Arc::new(job_repo),
+            Arc::new(queue_repo),
+            Arc::new(cluster_repo),
+        );
+
+        service.cleanup_dead_nodes().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn cleanup_stale_starting_jobs_cancels_when_queue_is_missing() {
+        let mut job = TrainingJob::new_mock();
+        job.status = TrainingJobStatus::Starting;
+        job.node_id = Some(crate::domain::cluster::models::NodeId::generate());
+        job.queue_id = Some(crate::domain::queue::models::QueueId::generate());
+
+        let job_id = job.id.clone();
+        let node_id = job.node_id.clone().unwrap();
+        let queue_id = job.queue_id.clone().unwrap();
+
+        let mut job_repo = MockTrainingJobRepository::new();
+        job_repo
+            .expect_get_jobs_by_status()
+            .with(eq(TrainingJobStatus::Starting))
+            .times(1)
+            .returning(move |_| Ok(vec![job.clone()]));
+        job_repo
+            .expect_update_status()
+            .with(eq(job_id.clone()), eq(TrainingJobStatus::Cancelled))
+            .times(1)
+            .returning(|_, _| Ok(()));
+        job_repo.expect_reset_job_status().times(0);
+
+        let mut queue_repo = MockQueueRepository::new();
+        queue_repo
+            .expect_get_queue_by_id()
+            .with(eq(queue_id.clone()))
+            .times(1)
+            .returning(|_| Err(QueueRepositoryError::NotFound("missing-queue".to_string())));
+
+        let mut cluster_repo = MockClusterRepository::new();
+        cluster_repo
+            .expect_get_cluster_node_by_id()
+            .with(eq(node_id.clone()))
+            .times(1)
+            .returning(|_| Ok(ClusterNode::new_mock()));
+
+        let service = build_service(
+            Arc::new(job_repo),
+            Arc::new(queue_repo),
+            Arc::new(cluster_repo),
+        );
+
+        service.cleanup_stale_starting_jobs().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn cleanup_preempted_jobs_requeues_non_terminal_reported_job() {
+        let job = TrainingJob {
+            status: TrainingJobStatus::Running,
+            ..TrainingJob::new_mock()
+        };
+        let job_id = job.id.clone();
+
+        let mut node = ClusterNode::new_mock();
+        node.assigned_job_id = None;
+        node.reported_job_id = Some(job_id.clone());
+
+        let mut job_repo = MockTrainingJobRepository::new();
+        job_repo
+            .expect_get_training_job_by_id()
+            .with(eq(job_id.clone()))
+            .times(1)
+            .returning(move |_| Ok(job.clone()));
+        job_repo
+            .expect_reset_job_status()
+            .with(eq(job_id.clone()))
+            .times(1)
+            .returning(|_| Ok(()));
+
+        let queue_repo = MockQueueRepository::new();
+
+        let mut cluster_repo = MockClusterRepository::new();
+        cluster_repo
+            .expect_list_all_nodes()
+            .times(1)
+            .returning(move || Ok(vec![node.clone()]));
+
+        let service = build_service(
+            Arc::new(job_repo),
+            Arc::new(queue_repo),
+            Arc::new(cluster_repo),
+        );
+
+        service.cleanup_preempted_jobs().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn run_cycle_marks_job_starting_when_agent_finds_capacity() {
+        let cluster_id = ClusterId::generate();
+
+        let mut queue = Queue::new_mock();
+        queue.cluster_targets = vec![cluster_id.clone()];
+        let queue_id = queue.id.clone();
+
+        let mut job = TrainingJob::new_mock();
+        job.queue_id = Some(queue_id.clone());
+        let job_id = job.id.clone();
+        let resource_requirements = job.resource_requirements.clone();
+
+        let mut schedulable_node = ClusterNode::new_mock();
+        schedulable_node.cluster_id = cluster_id.clone();
+        schedulable_node.cpu.millicores = resource_requirements.cpu_millicores;
+        schedulable_node.memory_mb = resource_requirements.memory_mb;
+        let node_id = schedulable_node.id.clone();
+
+        let mut job_repo = MockTrainingJobRepository::new();
+        job_repo
+            .expect_get_jobs_by_status()
+            .with(eq(TrainingJobStatus::Starting))
+            .times(1)
+            .returning(|_| Ok(vec![]));
+        job_repo
+            .expect_get_jobs_by_status()
+            .with(eq(TrainingJobStatus::Queued))
+            .times(1)
+            .returning(|_| Ok(vec![]));
+        job_repo
+            .expect_get_queued_jobs_for_queue()
+            .with(eq(queue_id.clone()))
+            .times(1)
+            .returning(move |_| Ok(vec![job.clone()]));
+        job_repo
+            .expect_mark_as_starting()
+            .with(eq(job_id.clone()), eq(node_id.clone()))
+            .times(1)
+            .returning(|_, _| Ok(()));
+
+        let mut queue_repo = MockQueueRepository::new();
+        queue_repo
+            .expect_get_all_queues_sorted()
+            .times(1)
+            .returning(move || Ok(vec![queue.clone()]));
+
+        let mut cluster_repo = MockClusterRepository::new();
+        cluster_repo
+            .expect_list_all_nodes()
+            .times(2)
+            .returning(|| Ok(vec![]));
+        cluster_repo
+            .expect_list_cluster_nodes()
+            .with(eq(cluster_id.clone()))
+            .times(1)
+            .returning(move |_| Ok(vec![schedulable_node.clone()]));
+        cluster_repo
+            .expect_assign_job_to_node()
+            .with(eq(node_id.clone()), eq(job_id.clone()))
+            .times(1)
+            .returning(|_, _| Ok(()));
+
+        let service = build_service(
+            Arc::new(job_repo),
+            Arc::new(queue_repo),
+            Arc::new(cluster_repo),
+        );
+
+        service.run_cycle().await.unwrap();
+    }
+}
