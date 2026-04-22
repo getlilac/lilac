@@ -55,30 +55,28 @@ impl SchedulerService {
 
     async fn cleanup_dead_nodes(&self) -> Result<(), SchedulerServiceError> {
         info!("Running dead node cleanup...");
-        let nodes = self.cluster_repo.list_all_nodes().await?;
+        let cutoff = Utc::now() - chrono::Duration::seconds(90);
+        let nodes = self.cluster_repo.list_nodes_older_than(cutoff).await?;
         for node in nodes {
-            let since_heartbeat = Utc::now() - node.heartbeat_timestamp;
-            if since_heartbeat > chrono::Duration::seconds(90) {
-                info!("Found dead node {}. Cleaning up.", node.id);
+            info!("Found dead node {}. Cleaning up.", node.id);
 
-                if let Some(job_id) = node.assigned_job_id {
-                    info!(
-                        "Re-queueing assigned job {} from dead node {}",
-                        job_id, node.id
-                    );
-                    self.job_repo.reset_job_status(&job_id).await?;
-                }
-
-                if let Some(job_id) = node.reported_job_id {
-                    info!(
-                        "Re-queueing reported job {} from dead node {}",
-                        job_id, node.id
-                    );
-                    self.job_repo.reset_job_status(&job_id).await?;
-                }
-
-                self.cluster_repo.delete_cluster_node(&node.id).await?;
+            if let Some(job_id) = node.assigned_job_id {
+                info!(
+                    "Re-queueing assigned job {} from dead node {}",
+                    job_id, node.id
+                );
+                self.job_repo.reset_job_status(&job_id).await?;
             }
+
+            if let Some(job_id) = node.reported_job_id {
+                info!(
+                    "Re-queueing reported job {} from dead node {}",
+                    job_id, node.id
+                );
+                self.job_repo.reset_job_status(&job_id).await?;
+            }
+
+            self.cluster_repo.delete_cluster_node(&node.id).await?;
         }
         Ok(())
     }
@@ -313,9 +311,9 @@ mod tests {
 
         let mut cluster_repo = MockClusterRepository::new();
         cluster_repo
-            .expect_list_all_nodes()
+            .expect_list_nodes_older_than()
             .times(1)
-            .returning(move || Ok(vec![stale_node.clone()]));
+            .returning(move |_| Ok(vec![stale_node.clone()]));
         cluster_repo
             .expect_delete_cluster_node()
             .with(eq(stale_node_id.clone()))
@@ -468,8 +466,12 @@ mod tests {
 
         let mut cluster_repo = MockClusterRepository::new();
         cluster_repo
+            .expect_list_nodes_older_than()
+            .times(1)
+            .returning(|_| Ok(vec![]));
+        cluster_repo
             .expect_list_all_nodes()
-            .times(2)
+            .times(1)
             .returning(|| Ok(vec![]));
         cluster_repo
             .expect_list_cluster_nodes()
