@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use sqlx::PgPool;
+use chrono::{DateTime, Utc};
 
 use crate::{
     domain::{
@@ -178,6 +179,24 @@ impl ClusterRepository for PostgresClusterRepository {
             SELECT node_id, cluster_id, node_status as "node_status: NodeStatusRecord", heartbeat_timestamp, memory_mb, cpu as "cpu: CpuConfigurationRecord", gpus as "gpus: Vec<GpuConfigurationRecord>", created_at, updated_at, assigned_job_id, reported_job_id
             FROM cluster_nodes
             "#,
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e: sqlx::Error| ClusterRepositoryError::Unknown(anyhow::anyhow!(e)))?;
+
+        let nodes: Vec<ClusterNode> = records.into_iter().map(|r| r.into()).collect();
+        Ok(nodes)
+    }
+
+    async fn list_nodes_older_than(&self, cutoff: DateTime<Utc>) -> Result<Vec<ClusterNode>, ClusterRepositoryError> {
+        let records = sqlx::query_as!(
+            ClusterNodeRecord,
+            r#"
+            SELECT node_id, cluster_id, node_status as "node_status: NodeStatusRecord", heartbeat_timestamp, memory_mb, cpu as "cpu: CpuConfigurationRecord", gpus as "gpus: Vec<GpuConfigurationRecord>", created_at, updated_at, assigned_job_id, reported_job_id
+            FROM cluster_nodes
+            WHERE heartbeat_timestamp < $1
+            "#,
+            cutoff,
         )
         .fetch_all(&self.pool)
         .await
