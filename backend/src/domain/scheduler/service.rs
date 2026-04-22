@@ -288,7 +288,6 @@ mod tests {
     #[tokio::test]
     async fn cleanup_dead_nodes_requeues_jobs_and_deletes_stale_node() {
 
-        // Create a stale node
         let mut stale_node = ClusterNode::new_mock();
         stale_node.heartbeat_timestamp = Utc::now() - chrono::Duration::seconds(91);
         stale_node.assigned_job_id = Some(crate::domain::training_job::models::JobId::generate());
