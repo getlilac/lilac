@@ -13,6 +13,7 @@ pub enum UserRepositoryError {
     Unknown(#[from] anyhow::Error),
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait UserRepository: Send + Sync + 'static {
     async fn create_user(&self, req: &CreateUserRequest) -> Result<User, UserRepositoryError>;
@@ -29,6 +30,7 @@ pub enum ApiKeyRepositoryError {
     Unknown(#[from] anyhow::Error),
 }
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait UserApiKeyRepository: Send + Sync + 'static {
     async fn create_api_key(&self, key: &ApiKey) -> Result<(), ApiKeyRepositoryError>;
